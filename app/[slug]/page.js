@@ -1,14 +1,17 @@
-'use client'; // 🌟 상훈님의 원래 본문 엔진이 클라이언트 방식으로 돌 수 있도록 첫 줄을 유지합니다!
+'use client'; // 🌟 상훈님의 원래 클라이언트 본문 엔진 유지
 
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation'; // 🌟 useParams 훅을 호출하여 안전하게 주소를 가져옵니다!
 import keywordsData from '../../data/keywords.json';
 
-// 🌟 메타데이터 함수(generateMetadata)는 서버용이라 클라이언트 파일에 직접 있으면 튕깁니다.
-// 대신, 상훈님이 사용하시는 주소 데이터를 매칭하는 기능만 남겨서 완벽하게 결합했습니다.
+export default function ProgressSEOPage() {
+  // useParams()를 사용하면 Next.js 공장이 절대 발작하지 않고 주소창 글자를 안전하게 낚아챕니다.
+  const params = useParams();
+  const slug = params?.slug;
 
-export default function ProgressSEOPage({ params }) {
-  const { slug } = params;
-  const decodedSlug = slug ? decodeURIComponent(slug) : "와와학습코칭센터";
+  if (!slug) return null;
+
+  // 주소창에 들어오는 한글 주소를 컴퓨터가 읽을 수 있도록 안전하게 변환
+  const decodedSlug = decodeURIComponent(slug);
 
   // 190개 지역 json 데이터 중에서 현재 주소에 맞는 진짜 마케팅 데이터를 매칭합니다.
   const matchedData = keywordsData.find((item) => item.slug === decodedSlug);
@@ -18,7 +21,7 @@ export default function ProgressSEOPage({ params }) {
     return notFound();
   }
 
-  // 상훈님이 예쁘게 디자인하셨던 홍보용 본문 화면 구조입니다.
+  // 상훈님의 소중한 홍보용 본문 화면 구조 (그대로 유지)
   return (
     <main style={{ padding: '40px', maxWidth: '800px', margin: '0 auto', fontFamily: 'sans-serif', lineHeight: '1.6' }}>
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
