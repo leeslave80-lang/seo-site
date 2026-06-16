@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
-import keywordsData from '@/data/keywords.json';
-
+import keywordsData from '../../data/keywords.json';
 // 🌟 [1] 네이버 검색 로봇용 최적화 간판 (이것 때문에 주말 내내 고생하셨던 그 코드!)
 export async function generateMetadata({ params }) {
   const { slug } = params;
