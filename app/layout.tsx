@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// 🌟 네이버 소유권 확인 전용 완벽 정렬 설정
+// 🌟 네이버 소유권 확인 코드는 100% 정상 작동하도록 그대로 유지!
 export const metadata: Metadata = {
   title: "와와학습코칭센터",
   description: "맞춤형 개별 지도 학원",
@@ -23,11 +23,12 @@ export const metadata: Metadata = {
   },
 };
 
+// 🌟 괄호 충돌이 전혀 없는 정석 구조로 변경했습니다.
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="ko">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
