@@ -1,6 +1,13 @@
-import { redirect } from 'next/navigation';
-
 export default function HomePage() {
-  // 메인 주소로 들어오는 네이버 로봇을 100% 안전하게 상세 페이지로 강제 이동시킵니다.
-  redirect('/%EB%82%A8%EA%B0%80%EC%A2%8C%EB%8F%99-%EC%98%81%EC%96%B4-%EA%B0%9C%EB%B3%84%EC%A7%80%EB%8F%84%ED%95%99%EC%9B%90');
+  return (
+    <main style={{ padding: "50px", textAlign: "center", fontFamily: "sans-serif" }}>
+      <h1 style={{ color: "#1d4ed8" }}>🏠 와와학습코칭센터 공식 안내 페이지</h1>
+      <p style={{ fontSize: "18px", color: "#4b5563", marginTop: "20px" }}>
+        전국 각 지역별 맞춤형 1:1 개별 지도 및 코칭 서비스를 제공합니다.
+      </p>
+      <p style={{ color: "#9ca3af", marginTop: "40px", fontSize: "14px" }}>
+        (정상적으로 네이버 서치어드바이저 인증용 메인 페이지가 가동 중입니다.)
+      </p>
+    </main>
+  );
 }

@@ -12,21 +12,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// 🌟 네이버 소유권 확인 전용 완벽 정렬 설정
 export const metadata: Metadata = {
-
   title: "와와학습코칭센터",
-
   description: "맞춤형 개별 지도 학원",
-
   verification: {
-
     other: {
-
-"naver-site-verification": "f02be3672f11327086d7cf03a6ed1a622dccc5fc",
+      "naver-site-verification": "f02be3672f11327086d7cf03a6ed1a622dccc5fc",
     },
-
   },
-
 };
 
 export default function RootLayout({
@@ -35,11 +29,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="ko">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }
