@@ -96,6 +96,53 @@ export default function ProgressSEOPage() {
           </a>
         </section>
 
+        {/* 📥 실시간 데이터 수집 상담 신청 폼 (Formspree 공식 연동) */}
+        <section style={{ backgroundColor: '#f8fafc', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '30px' }}>
+          <h3 style={{ fontSize: '18px', color: '#1e3a8a', fontWeight: '700', margin: '0 0 4px 0', textAlign: 'center' }}>
+            📋 1:1 무료 학습 진단 및 상담 신청
+          </h3>
+          <p style={{ fontSize: '13px', color: '#64748b', textAlign: 'center', margin: '0 0 20px 0' }}>
+            정보를 입력해 주시면 {matchedData.지역} 센터에서 개별 연락을 드립니다.
+          </p>
+
+          <form 
+            action="https://formspree.io/f/meewdjzp"
+            method="POST"
+            style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}
+          >
+            {/* 알림 메일이 왔을 때 어느 지역, 무슨 과목 페이지에서 온 유입인지 자동으로 분류해주는 스마트 히든 필드 */}
+            <input type="hidden" name="신청지역" value={matchedData.지역} />
+            <input type="hidden" name="문의과목" value={matchedData.과목} />
+
+            <div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', color: '#475569' }}>학부모 성함</label>
+              <input type="text" name="학부모성함" required placeholder="예: 홍길동" style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', boxSizing: 'border-box' }} />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', color: '#475569' }}>연락처</label>
+              <input type="tel" name="연락처" required placeholder="예: 010-1234-5678" style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', boxSizing: 'border-box' }} />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', color: '#475569' }}>자녀 학년</label>
+              <select name="자녀학년" style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', backgroundColor: '#ffffff', boxSizing: 'border-box' }}>
+                <option value="초등학생">초등학생</option>
+                <option value="중1">중학교 1학년</option>
+                <option value="중2">중학교 2학년</option>
+                <option value="중3">중학교 3학년</option>
+                <option value="고1">고등학교 1학년</option>
+                <option value="고2">고등학교 2학년</option>
+                <option value="고3/N수">고등학교 3학년 / N수생</option>
+              </select>
+            </div>
+
+            <button type="submit" style={{ width: '100%', backgroundColor: '#1e3a8a', color: '#ffffff', padding: '14px', borderRadius: '6px', fontSize: '15px', fontWeight: 'bold', border: 'none', cursor: 'pointer', marginTop: '10px', boxShadow: '0 4px 6px rgba(30, 58, 138, 0.15)' }}>
+              무료 상담 및 진단 신청하기
+            </button>
+          </form>
+        </section>
+
         {/* 📞 최하단 다이렉트 문의 연동 버튼 */}
         <div style={{ marginTop: '20px' }}>
           <a 
