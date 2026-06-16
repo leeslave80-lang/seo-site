@@ -1,24 +1,14 @@
+'use client'; // 🌟 상훈님의 원래 본문 엔진이 클라이언트 방식으로 돌 수 있도록 첫 줄을 유지합니다!
+
 import { notFound } from 'next/navigation';
 import keywordsData from '../../data/keywords.json';
-// 🌟 [1] 네이버 검색 로봇용 최적화 간판 (이것 때문에 주말 내내 고생하셨던 그 코드!)
-export async function generateMetadata({ params }) {
-  const { slug } = params;
-  const decodeSlug = slug ? decodeURIComponent(slug) : "와와학습코칭센터";
 
-  return {
-    title: `${decodeSlug} | 공식 안내 기지`,
-    description: `${decodeSlug} 맞춤형 1:1 개별 지도 및 코칭 서비스를 제공합니다.`,
-    openGraph: {
-      title: decodeSlug,
-      description: "1:1 개별 밀착 맞춤 코칭 및 무료 상담 신청하기",
-    },
-  };
-}
+// 🌟 메타데이터 함수(generateMetadata)는 서버용이라 클라이언트 파일에 직접 있으면 튕깁니다.
+// 대신, 상훈님이 사용하시는 주소 데이터를 매칭하는 기능만 남겨서 완벽하게 결합했습니다.
 
-// 🌟 [2] 철거되었던 상훈님의 진짜 화려한 10만 개 본문 엔진 복구!
 export default function ProgressSEOPage({ params }) {
   const { slug } = params;
-  const decodedSlug = decodeURIComponent(slug);
+  const decodedSlug = slug ? decodeURIComponent(slug) : "와와학습코칭센터";
 
   // 190개 지역 json 데이터 중에서 현재 주소에 맞는 진짜 마케팅 데이터를 매칭합니다.
   const matchedData = keywordsData.find((item) => item.slug === decodedSlug);
@@ -35,7 +25,7 @@ export default function ProgressSEOPage({ params }) {
         <span style={{ backgroundColor: '#e0f2fe', color: '#0369a1', padding: '6px 12px', borderRadius: '20px', fontSize: '14px', fontWeight: 'bold' }}>
           {matchedData.수식어 || "추천 학원 안내"}
         </span>
-        <h1 style={{ fontSize: '32px', color: '#1e3a8a', marginTop: '16px', fontWeight: '8px' }}>
+        <h1 style={{ fontSize: '32px', color: '#1e3a8a', marginTop: '16px', fontWeight: 'bold' }}>
           {matchedData.지역} {matchedData.과목} 전문 교육 기지
         </h1>
         <p style={{ color: '#4b5563', fontSize: '18px', marginTop: '12px' }}>
