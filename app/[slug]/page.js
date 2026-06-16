@@ -16,87 +16,95 @@ export default function ProgressSEOPage() {
     return notFound();
   }
 
-  // 🗺️ 네이버 지도 검색창으로 바로 연결되는 안전한 주소 링크 생성
-  const naverMapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(matchedData.지역 + " " + (matchedData.수식어 || "와와학습코칭센터"))}`;
+  // 🗺️ 네이버 지도 공식 검색 연동
+  const naverMapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(matchedData.지역 + " 와와학습코칭센터")}`;
 
   return (
-    <main style={{ padding: '20px', maxWidth: '600px', margin: '0 auto', fontFamily: 'sans-serif', lineHeight: '1.7', color: '#334155', backgroundColor: '#ffffff' }}>
+    <main style={{ padding: '0', maxWidth: '540px', margin: '0 auto', fontFamily: '"Noto Sans KR", sans-serif', color: '#1e293b', backgroundColor: '#ffffff', minHeight: '100vh', boxShadow: '0 0 20px rgba(0,0,0,0.05)' }}>
       
-      {/* 🏷️ 상단 카테고리 태그 */}
-      <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        <span style={{ backgroundColor: '#eff6ff', color: '#1d4ed8', padding: '6px 14px', borderRadius: '50px', fontSize: '13px', fontWeight: 'bold', letterSpacing: '-0.5px' }}>
-          {matchedData.수식어 || "명품 교육 안내"}
+      {/* 🏛️ 본사 스타일 상단 탑 바 */}
+      <div style={{ backgroundColor: '#1e3a8a', padding: '16px', textAlign: 'center', borderBottom: '3px solid #e2e8f0' }}>
+        <h2 style={{ margin: '0', fontSize: '15px', color: '#ffffff', fontWeight: '700', letterSpacing: '1px' }}>
+          WAWA LEARNING COACHING CENTER
+        </h2>
+      </div>
+
+      {/* 🏷️ 메인 비주얼 배너 영역 (공식 이미지/로고 활용 구역) */}
+      <div style={{ padding: '30px 20px', textAlign: 'center', backgroundColor: '#f8fafc', backgroundImage: 'linear-gradient(to bottom, #f8fafc, #edf2f7)' }}>
+        <span style={{ backgroundColor: '#1e3a8a', color: '#ffffff', padding: '4px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold' }}>
+          {matchedData.수식어 || "공식 인증 점포"}
         </span>
+        <h1 style={{ fontSize: '26px', color: '#1e3a8a', marginTop: '16px', fontWeight: '800', lineHeight: '1.4', letterSpacing: '-1px', wordBreak: 'keep-all' }}>
+          {matchedData.지역} {matchedData.과목} 학부모가 <br/>
+          가장 신뢰하는 <span style={{ color: '#b45309' }}>와와학습코칭학원</span>
+        </h1>
+        <p style={{ color: '#475569', fontSize: '14px', marginTop: '8px', fontWeight: '400' }}>
+          둥지형 밀착 지도 시스템과 자기주도학습의 완벽한 융합
+        </p>
+
+        {/* 🖼️ 이미지 공간: 본사 메인 전경 또는 로고 이미지 */}
+        <div style={{ marginTop: '20px', width: '100%', height: '200px', backgroundColor: '#e2e8f0', borderRadius: '8px', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '1px solid #cbd5e1' }}>
+          <img 
+            src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=600&q=80" 
+            alt="와와학습코칭센터 공식 수업 전경"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        </div>
       </div>
 
-      {/* ✍️ 메인 타이틀 헤드라인 */}
-      <h1 style={{ fontSize: '28px', color: '#0f172a', textAlign: 'center', marginTop: '16px', fontWeight: '800', letterSpacing: '-1px', wordBreak: 'keep-all' }}>
-        {matchedData.지역} {matchedData.과목} 학원 선택, <br/>
-        <span style={{ color: '#2563eb' }}>결국 와와학습코칭센터인 이유</span>
-      </h1>
+      <div style={{ padding: '24px' }}>
+        {/* 📝 핵심 가치 세부 문구 */}
+        <section style={{ marginBottom: '30px' }}>
+          <h3 style={{ fontSize: '18px', color: '#1e3a8a', fontWeight: '700', marginBottom: '10px' }}>
+            ✨ 단 한 명을 위한 맞춤형 '둥지형 코칭 시스템'
+          </h3>
+          <p style={{ fontSize: '14.5px', lineHeight: '1.7', color: '#334155', margin: '0', wordBreak: 'keep-all' }}>
+            기존의 판서식 대형 학원처럼 진도만 빼고 끝나는 수업은 아이의 진짜 실력이 될 수 없습니다. 
+            <strong>{matchedData.지역} 와와학습코칭센터</strong>는 개별 진단 테스트를 통해 
+            아이의 현재 수준과 성향을 정밀 분석한 뒤, {matchedData.과목} 취약 단원을 완벽하게 보완하는 1:1 맞춤형 피드백 수업을 고집합니다.
+          </p>
+        </section>
 
-      <p style={{ textAlign: 'center', color: '#64748b', fontSize: '15px', marginTop: '10px', marginBottom: '30px' }}>
-        우리 아이 맞춤형 1:1 밀착 개별 지도 및 자기주도학습 매니징
-      </p>
+        {/* 📊 공식 커리큘럼 안내 그리드 */}
+        <section style={{ marginBottom: '30px', backgroundColor: '#f1f5f9', padding: '20px', borderRadius: '8px' }}>
+          <h4 style={{ fontSize: '15px', color: '#1e3a8a', fontWeight: '700', margin: '0 0 12px 0' }}>
+            📈 {matchedData.지역} 와와만의 3단계 성장 프로세스
+          </h4>
+          <div style={{ fontSize: '14px', lineHeight: '1.6' }}>
+            <div style={{ marginBottom: '8px' }}><strong>1. 맞춤형 과목 지도 :</strong> 내신 및 모의고사 철저 대비</div>
+            <div style={{ marginBottom: '8px' }}><strong>2. 학습 플래너 관리 :</strong> 스스로 계획하고 실행하는 자기주도력 배양</div>
+            <div><strong>3. 1:1 밀착 피드백 :</strong> 오답 노트와 밀착 질의응답을 통한 완벽 습득</div>
+          </div>
+        </section>
 
-      {/* 🖼️ 1. 홍보 이미지 영역 (공통 배너 혹은 추후 커스텀 이미지 들어갈 자리) */}
-      <div style={{ width: '100%', height: '240px', backgroundColor: '#f1f5f9', borderRadius: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginBottom: '35px', border: '1px dashed #cbd5e1' }}>
-        <span style={{ fontSize: '35px', marginBottom: '10px' }}>🏫</span>
-        <p style={{ margin: '0', fontSize: '16px', fontWeight: 'bold', color: '#475569' }}>와와학습코칭센터 공식 홍보 영역</p>
-        <p style={{ margin: '5px 0 0 0', fontSize: '13px', color: '#94a3b8' }}>(여기에 메인 홍보 이미지가 배치될 예정입니다)</p>
-      </div>
+        {/* 🗺️ 지역별 공식 지도 섹션 */}
+        <section style={{ marginBottom: '35px', textAlign: 'center', padding: '20px', border: '1px solid #e2e8f0', borderRadius: '8px', backgroundColor: '#fafafa' }}>
+          <div style={{ fontSize: '20px', marginBottom: '6px' }}>📍</div>
+          <h4 style={{ fontSize: '15px', color: '#1e3a8a', margin: '0 0 4px 0', fontWeight: '700' }}>
+            {matchedData.지역} 와와학습코칭학원 위치 확인
+          </h4>
+          <p style={{ fontSize: '12px', color: '#64748b', margin: '0 0 12px 0' }}>
+            인근 학교별 전용 내신 분석실 및 면학 공간 완비
+          </p>
+          <a 
+            href={naverMapUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: 'inline-block', backgroundColor: '#03c75a', color: '#ffffff', padding: '8px 16px', borderRadius: '4px', fontSize: '13px', fontWeight: 'bold', textDecoration: 'none' }}
+          >
+            네이버 지도에서 보기
+          </a>
+        </section>
 
-      {/* 📝 2. 세부 내용 스토리텔링 섹션 */}
-      <section style={{ marginBottom: '35px' }}>
-        <h2 style={{ fontSize: '18px', color: '#0f172a', fontWeight: '700', marginBottom: '12px', borderLeft: '4px solid #2563eb', paddingLeft: '10px' }}>
-          💡 주입식 교육은 가라! {matchedData.지역} 맞춤형 코칭
-        </h2>
-        <p style={{ fontSize: '15px', color: '#475569', wordBreak: 'keep-all', margin: '0 0 15px 0' }}>
-          단순히 강사의 진도만 따라가는 일방향 수업은 아이의 진짜 실력이 되지 않습니다. {matchedData.지역} 와와학습코칭센터에서는 학생이 스스로 문제를 해결할 수 있도록 질문하고 이끄는 <strong>1:1 티칭+코칭 융합 시스템</strong>을 제공합니다.
-        </p>
-        <p style={{ fontSize: '15px', color: '#475569', wordBreak: 'keep-all', margin: '0' }}>
-          특히 철저하게 분석된 {matchedData.지역} 인근 학교들의 최신 내신 출제 경향을 바탕으로, 우리 아이의 취약 과목과 단원을 정밀 분석하여 단 하나의 구멍도 없도록 완벽하게 메꿔나갑니다.
-        </p>
-      </section>
-
-      <section style={{ marginBottom: '35px', backgroundColor: '#f8fafc', padding: '24px', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
-        <h2 style={{ fontSize: '17px', color: '#1e3a8a', fontWeight: '700', marginBottom: '14px', marginTop: '0' }}>
-          🎯 {matchedData.과목} 성적 향상을 위한 핵심 포인트
-        </h2>
-        <ul style={{ paddingLeft: '20px', margin: '0', fontSize: '14.5px', color: '#334155' }}>
-          <li style={{ marginBottom: '10px' }}><strong>철저한 개별 진도:</strong> 이해하지 못한 채 넘어가는 진도는 무의미! 이해할 때까지 반복 학습</li>
-          <li style={{ marginBottom: '10px' }}><strong>둥지형 밀착 지도:</strong> 언제든 질문하고 피드백을 받을 수 있는 몰입형 면학 분위기 조성</li>
-          <li><strong>학습 플래너 관리:</strong> {matchedData.과목} 점수뿐만 아니라, 스스로 공부하는 습관을 만드는 플래닝 코칭</li>
-        </ul>
-      </section>
-
-      {/* 🗺️ 3. 지역별 지도 확인 버튼 섹션 */}
-      <section style={{ marginBottom: '40px', textAlign: 'center', padding: '20px', border: '1px solid #e2e8f0', borderRadius: '12px' }}>
-        <span style={{ fontSize: '24px' }}>📍</span>
-        <h3 style={{ fontSize: '16px', color: '#0f172a', margin: '10px 0 6px 0', fontWeight: '700' }}>
-          {matchedData.지역} 상세 위치 및 오시는 길
-        </h3>
-        <p style={{ fontSize: '13px', color: '#64748b', margin: '0 0 15px 0' }}>
-          우리 동네 와와학습코칭센터의 정확한 위치를 확인해 보세요.
-        </p>
-        <a 
-          href={naverMapUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#03c75a', color: '#ffffff', padding: '10px 20px', borderRadius: '6px', fontSize: '14px', fontWeight: 'bold', textDecoration: 'none' }}
-        >
-          💚 네이버 지도에서 위치 확인하기
-        </a>
-      </section>
-
-      {/* 📞 4. 하단 고정형 느낌의 무료 상담 전화 버튼 */}
-      <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
-        <a 
-          href="tel:010-0000-0000" 
-          style={{ display: 'block', backgroundColor: '#2563eb', color: '#ffffff', padding: '16px 20px', borderRadius: '8px', fontSize: '16px', fontWeight: 'bold', textDecoration: 'none', boxShadow: '0 4px 6px -1px rgba(37, 99, 235, 0.2)' }}
-        >
-          📞 {matchedData.지역} 1:1 무료 학습진단 상담하기
-        </a>
+        {/* 📞 최하단 다이렉트 문의 연동 버튼 */}
+        <div style={{ marginTop: '20px' }}>
+          <a 
+            href="tel:010-0000-0000" 
+            style={{ display: 'block', backgroundColor: '#1e3a8a', color: '#ffffff', padding: '16px', borderRadius: '6px', fontSize: '16px', fontWeight: 'bold', textDecoration: 'none', textAlign: 'center', boxShadow: '0 4px 6px rgba(30, 58, 138, 0.2)' }}
+          >
+            📞 {matchedData.지역} 센터 무료 학습상담 연결
+          </a>
+        </div>
       </div>
 
     </main>
