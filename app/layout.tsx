@@ -20,7 +20,8 @@ export default function RootLayout({
         <meta property="og:type" content="website" />
 
         {/* 🔍 [네이버 소유주 인증 칩] */}
-        <meta name="naver-site-verification" content="f8796f7c10b27dbf81216a695b2c7e0c7104f056" />
+        <meta name="naver-site-verification" content="0337b88318f48843ce9cd1a28e9b89bb9e71557a" />
+
 
         {/* 🔍 [구글 소유주 인증 칩] 상훈님이 발급받으신 진짜 코드로 탑재 완료! */}
         <meta name="google-site-verification" content="kHk0DxVTGG9OB1uHNXiXtDRfCgrrOufrKx9LaMbwooo" />
