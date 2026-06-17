@@ -1,9 +1,10 @@
 import keywordsData from '../data/keywords.json';
 
 export default async function sitemap() {
-  const baseUrl = 'https://seo-site-rho.vercel.app';
+  // 🎯 구글/네이버 수집 에러 완벽 해결: 진짜 도메인 주소로 싱크 맞추기
+  const baseUrl = 'https://www.wawacoaching.co.kr';
 
-  // keywords.json에 있는 190개 대량 주소(slug)를 네이버 로봇용 메뉴판 주소로 자동 변환합니다.
+  // keywords.json에 있는 대량 주소(slug)를 진짜 도메인 주소로 자동 변환합니다.
   const fields = keywordsData.map((item) => ({
     url: `${baseUrl}/${encodeURIComponent(item.slug)}`,
     lastModified: new Date().toISOString(),
