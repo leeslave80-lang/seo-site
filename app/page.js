@@ -2,29 +2,35 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import keywordsData from '../data/keywords.json'; // 190개 지점 데이터 로드
+// 🎯 [정밀 타격] 상훈님의 실제 폴더 구조(src/data/)에 맞게 경로를 수정했습니다!
+import keywordsData from '../src/data/keywords.json'; 
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('전체');
 
-  // 1. 대형 지역 구분을 위한 분류 로직 (지점명 기준으로 시/도 분류)
+  // 1. 대형 지역 구분을 위한 분류 로직
   const regions = ['전체', '서울', '경기', '인천', '대전', '충청', '부산', '대구', '경상', '광주', '전라', '강원', '제주'];
 
   // 2. 검색 및 지역 탭 필터링 마스터 시스템
   const filteredBranches = keywordsData.filter((item) => {
-    // 검색어 매칭
-    const matchesSearch = item.지역.toLowerCase().includes(searchTerm.toLowerCase());
+    // 💥 데이터 구조 안정성 확보: item.지역이나 item.지점명이 없을 때를 대비한 방어 코드 추가
+    const regionName = item.지역 || '';
+    const branchName = item.지점명 || '';
+    
+    // 검색어 매칭 (지역명 또는 지점명 둘 다 검색 가능하도록 개선)
+    const matchesSearch = regionName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          branchName.toLowerCase().includes(searchTerm.toLowerCase());
     
     // 탭 선택 매칭
     if (selectedRegion === '전체') return matchesSearch;
     
     // 세부 도외 분기 처리
-    if (selectedRegion === '충청') return matchesSearch && (item.지역.includes('충남') || item.지역.includes('충북') || item.지역.includes('세종'));
-    if (selectedRegion === '경상') return matchesSearch && (item.지역.includes('경남') || item.지역.includes('경북'));
-    if (selectedRegion === '전라') return matchesSearch && (item.지역.includes('전남') || item.지역.includes('전북'));
+    if (selectedRegion === '충청') return matchesSearch && (regionName.includes('충남') || regionName.includes('충북') || regionName.includes('세종'));
+    if (selectedRegion === '경상') return matchesSearch && (regionName.includes('경남') || regionName.includes('경북'));
+    if (selectedRegion === '전라') return matchesSearch && (regionName.includes('전남') || regionName.includes('전북'));
     
-    return matchesSearch && item.지역.includes(selectedRegion);
+    return matchesSearch && regionName.includes(selectedRegion);
   });
 
   return (
@@ -37,10 +43,10 @@ export default function Home() {
         </h1>
       </div>
 
-      {/* 대문 마케팅 배너 (3번 항목 고도화 전 임시 비주얼 스폿) */}
+      {/* 대문 마케팅 배너 */}
       <div style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
         <div style={{ display: 'inline-block', backgroundColor: '#ea580c', color: '#ffffff', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', marginBottom: '12px' }}>
-          전국 190여 개 거점 지점 보유
+          전국 거점 공식 지점 보유
         </div>
         <h2 style={{ fontSize: '22px', color: '#1e3a8a', fontWeight: '800', margin: '0 0 12px 0', lineHeight: '1.4' }}>
           우리 동네 가장 가까운 <br/>
@@ -65,7 +71,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 🗺️ 대한민국 지역별 필터 탭 (슬라이더 레이아웃) */}
+      {/* 🗺️ 대한민국 지역별 필터 탭 */}
       <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', padding: '0 20px 15px 20px', whiteSpace: 'nowrap', WebkitOverflowScrolling: 'touch' }}>
         {regions.map((region) => (
           <button
@@ -109,16 +115,16 @@ export default function Home() {
             {filteredBranches.map((item, idx) => (
               <Link 
                 key={idx} 
-                href={`/${encodeURIComponent(item.slug)}`}
+                href={`/${encodeURIComponent(item.slug || '')}`}
                 style={{ textDecoration: 'none', display: 'block' }}
               >
                 <div style={{ padding: '16px', border: '1px solid #e2e8f0', borderRadius: '10px', backgroundColor: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 2px 5px rgba(0,0,0,0.02)' }}>
                   <div>
                     <h3 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: 'bold', color: '#0f172a' }}>
-                      {item.지역} 와와학습코칭센터
+                      {item.시도 || ''} 와와학습코칭센터 {item.지점명 || ''}
                     </h3>
                     <p style={{ margin: '0', fontSize: '12px', color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '400px' }}>
-                      주요 과목: {item.과목}
+                      📍 {item.주소 || '공식 등록 지점'}
                     </p>
                   </div>
                   <span style={{ color: '#1e40af', fontSize: '14px', fontWeight: 'bold' }}>➔</span>

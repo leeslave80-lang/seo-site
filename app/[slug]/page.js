@@ -1,20 +1,16 @@
 import React from 'react';
 import Link from 'next/link';
 
-// 🎯 실제 폴더 구조인 src/data/keywords.json 경로로 정밀 타격!
+// 🎯 확인된 실제 폴더 구조(src/data/) 경로로 정밀 타격!
 import branchData from '../../src/data/keywords.json';
 
-// Next.js 15 빌드 머신 규격에 맞춘 async/await 래핑 구조
 export default async function BranchDetail(props) {
-  // 1. 공식 가이드라인대로 props를 먼저 await 한 뒤 params unwrap 진행
   const resolvedProps = await props;
   const params = await resolvedProps.params;
   const currentSlug = decodeURIComponent(params.slug);
 
-  // 2. 마스터 데이터에서 현재 슬러그 지점 정밀 매칭
   const branch = branchData.find((item) => item.slug === currentSlug);
 
-  // 예외 처리: 일치하는 지점이 없을 때의 안전 복귀 가이드
   if (!branch) {
     return (
       <div style={{ padding: '50px 20px', textAlign: 'center', fontFamily: '"Noto Sans KR", sans-serif' }}>
@@ -26,7 +22,6 @@ export default async function BranchDetail(props) {
     );
   }
 
-  // 💰 [요구사항 2번] 제주 거점 유무를 판별하여 수강료 요율 자동 차등 분기
   const isJeju = branch.주소 && branch.주소.includes('제주');
   const priceTable = isJeju 
     ? { elementary: '60,000원', middle: '65,000원', high: '75,000원', desc: '제주 거점 프리미엄 교육비 요율 적용' }
@@ -35,7 +30,6 @@ export default async function BranchDetail(props) {
   return (
     <main style={{ padding: '0', maxWidth: '540px', margin: '0 auto', fontFamily: '"Noto Sans KR", sans-serif', color: '#1e293b', backgroundColor: '#ffffff', minHeight: '100vh', boxShadow: '0 0 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
       
-      {/* 고정 상단 네비게이션 */}
       <div style={{ backgroundColor: '#1e40af', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href="/" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '18px', fontWeight: 'bold' }}>🔙</Link>
         <h1 style={{ margin: '0', fontSize: '14px', color: '#ffffff', fontWeight: '800', letterSpacing: '0.5px' }}>
@@ -44,7 +38,6 @@ export default async function BranchDetail(props) {
         <div style={{ width: '20px' }}></div>
       </div>
 
-      {/* [요구사항 3, 4번] 지점별 커스텀 마케팅 배너 인프라 */}
       <div style={{ padding: '35px 20px', backgroundColor: '#f1f5f9', borderBottom: '4px solid #ea580c', textAlign: 'center' }}>
         <span style={{ backgroundColor: '#1e40af', color: '#ffffff', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold' }}>
           {branch.시도 || '인증'} 거점 공식 지정 센터
@@ -63,12 +56,10 @@ export default async function BranchDetail(props) {
         </div>
       </div>
 
-      {/* 특장점 마케팅 카피 판넬 */}
       <div style={{ padding: '30px 20px' }}>
         <h3 style={{ fontSize: '17px', color: '#0f172a', fontWeight: '800', margin: '0 0 16px 0', borderLeft: '4px solid #1e40af', paddingLeft: '8px' }}>
           왜 {branch.지점명} 와와학습코칭학원일까요?
         </h3>
-        
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
             <strong style={{ color: '#1e40af', fontSize: '14.5px', display: 'block', marginBottom: '4px' }}>1. 무조건 일대일 밀착 개별 지도 및 과외식 수업</strong>
@@ -76,24 +67,15 @@ export default async function BranchDetail(props) {
               진도만 나가는 판서식 대형 학원과 다릅니다. 우리 아이의 현재 성취도와 이해 속도에 맞춰 질문과 피드백이 실시간으로 오가는 완벽 맞춤형 둥지식 과외 학원입니다.
             </span>
           </div>
-
           <div style={{ backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
             <strong style={{ color: '#ea580c', fontSize: '14.5px', display: 'block', marginBottom: '4px' }}>2. {branch.지점명} 인근 학교 완벽 분석 밀착 기출관리</strong>
             <span style={{ fontSize: '13px', color: '#475569', lineHeight: '1.5', display: 'block' }}>
               인근 <strong>{branch.타깃학교 || '학교별'}</strong>의 최근 중간·기말고사 출제 경향, 수행평가 유형을 철저하게 해부하여 학교별 맞춤 기출 마킹 레이아웃을 제공합니다.
             </span>
           </div>
-
-          <div style={{ backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <strong style={{ color: '#16a34a', fontSize: '14.5px', display: 'block', marginBottom: '4px' }}>3. 단순 문제풀이를 넘어선 '공부9도' 코칭 시스템</strong>
-            <span style={{ fontSize: '13px', color: '#475569', lineHeight: '1.5', display: 'block' }}>
-              스스로 계획을 세우는 플래너 관리부터 메타인지 학습법까지 지도하여 학원에 의존하지 않고 스스로 성적을 올릴 수 있는 강력한 자기주도학습 성향별 로드맵을 구축합니다.
-            </span>
-          </div>
         </div>
       </div>
 
-      {/* [요구사항 2번] 분기된 수강료 테이블 안내 구역 */}
       <div style={{ padding: '10px 20px 30px 20px' }}>
         <h3 style={{ fontSize: '17px', color: '#0f172a', fontWeight: '800', margin: '0 0 4px 0', borderLeft: '4px solid #1e40af', paddingLeft: '8px' }}>
           정식 교습비(수강료) 안내
@@ -120,27 +102,23 @@ export default async function BranchDetail(props) {
         </div>
       </div>
 
-      {/* [요구사항 5번 인프라] 외부 접수 채널 폼 연동 구역 */}
       <div style={{ padding: '30px 20px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>
         <h3 style={{ fontSize: '19px', color: '#1e3a8a', fontWeight: '900', margin: '0 0 6px 0' }}>
           📝 {branch.지점명} 실시간 무료 상담 신청
         </h3>
         <p style={{ margin: '0 0 16px 0', fontSize: '12.5px', color: '#64748b', lineHeight: '1.4' }}>
-          학부모 전용 안심 채널입니다. 원활한 1:1 예약 배정을 위해<br/>
-          아래 공식 접수처를 통해 즉시 상담 예약을 매칭해 드립니다.
+          공식 접수처를 통해 즉시 상담 예약을 매칭해 드립니다.
         </p>
         <a href="https://forms.gle/4XvN7W88p6qZtY8u5" target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', padding: '16px', backgroundColor: '#ea580c', color: '#ffffff', textDecoration: 'none', borderRadius: '6px', fontSize: '15px', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(234,88,12,0.15)', boxSizing: 'border-box' }}>
           와와 {branch.지점명} 1:1 상담 예약하기 (공식 안심 폼) ➔
         </a>
       </div>
 
-      {/* 법적 가이드 푸터 판넬 */}
       <div style={{ padding: '24px 20px', backgroundColor: '#1e293b', color: '#94a3b8', fontSize: '11.5px', lineHeight: '1.6' }}>
         <p style={{ margin: '0 0 6px 0', color: '#cbd5e1', fontWeight: 'bold' }}>WAWA LEARNING COACHING CENTER</p>
         <p style={{ margin: '0 0 4px 0' }}>공식 지정 등록처: 와와학습코칭센터 {branch.지점명}</p>
         <p style={{ margin: '0 0 4px 0' }}>🏢 센터 주소: {branch.주소}</p>
         <p style={{ margin: '0 0 12px 0', color: '#38bdf8', fontWeight: 'bold' }}>⚖️ 교육지원청 정식 등록번호: {branch.등록번호 || '정식 등록 인증 완료'}</p>
-        <p style={{ margin: '0', fontSize: '11px', color: '#64748b' }}>본 사이트는 전국 와와학습코칭센터의 검색 노출 및 온라인 상담 예약을 대행하는 공식 마케팅 웹페이지입니다. 상기 명시된 교습비 요율은 교육지원청 기준 가이드를 준수합니다.</p>
       </div>
 
     </main>
