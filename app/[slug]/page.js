@@ -2,16 +2,16 @@ import React from 'react';
 import Link from 'next/link';
 import branchData from '@/data/keywords.json';
 
-// 1. 버셀 빌드 머신이 요구하는 정식 'async function' 페이지 컴포넌트 구조 정의
+// Next.js 15+ 빌드 규격을 통과하기 위해 순수 async/await 함수로만 구성 (use client 절대 금지)
 export default async function BranchDetail({ params }) {
-  // 2. Next.js 15가 원하는 방식대로 await를 사용해 동적 파라미터를 완벽하게 수신
+  // 1. Next.js 15가 원하는 방식 그대로 params 약속(Promise) 해제
   const resolvedParams = await params;
   const currentSlug = decodeURIComponent(resolvedParams.slug);
 
-  // 3. 마스터 데이터에서 현재 슬러그 지점 매칭
+  // 2. 마스터 데이터에서 현재 슬러그 지점 매칭
   const branch = branchData.find((item) => item.slug === currentSlug);
 
-  // 예외 처리: 일치하는 지점이 없을 때의 안전 복귀 가이드
+  // 예외 처리: 일치하는 지점이 없을 때의 복귀 가이드
   if (!branch) {
     return (
       <div style={{ padding: '50px 20px', textAlign: 'center', fontFamily: '"Noto Sans KR", sans-serif' }}>
@@ -117,7 +117,7 @@ export default async function BranchDetail({ params }) {
         </div>
       </div>
 
-      {/* 상담 예약 다이렉트 링크 (네이버 폼 또는 플레이스 연동용 마크업 인프라) */}
+      {/* 상담 예약 구글 폼 연동 구역 */}
       <div style={{ padding: '30px 20px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>
         <h3 style={{ fontSize: '19px', color: '#1e3a8a', fontWeight: '900', margin: '0 0 6px 0' }}>
           📝 {branch.지점명} 실시간 무료 상담 신청
@@ -127,9 +127,8 @@ export default async function BranchDetail({ params }) {
           아래 공식 접수처를 통해 즉시 상담 예약을 매칭해 드립니다.
         </p>
         
-        {/* 상훈님의 마케팅 DB 수집 링크 주소 입력 구역 */}
-        <a href="https://forms.gle/4XvN7W88p6qZtY8u5" target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', padding: '16px', backgroundColor: '#ea580c', color: '#ffffff', textDecoration: 'none', borderRadius: '6px', fontSize: '15px', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(234,88,12,0.15)' }}>
-          와와 {branch.지점명} 1:1 상담 예약하기 (구글/네이버 폼 연동) ➔
+        <a href="https://forms.gle/4XvN7W88p6qZtY8u5" target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', padding: '16px', backgroundColor: '#ea580c', color: '#ffffff', textDecoration: 'none', borderRadius: '6px', fontSize: '15px', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(234,88,12,0.15)', boxSizing: 'border-box' }}>
+          와와 {branch.지점명} 1:1 상담 예약하기 (공식 안심 폼) ➔
         </a>
       </div>
 
