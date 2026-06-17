@@ -1,14 +1,17 @@
 import React from 'react';
 import Link from 'next/link';
-import branchData from '../../data/keywords.json';
 
-// 힌트 문서가 요구하는 Next.js 15 규격과 완벽히 일치하는 비동기 함수 구조
-export default async function BranchDetail({ params }) {
-  // 🎯 공식 문서 힌트 그대로 params 약속(Promise)을 구조 분해 할당으로 완벽하게 수신
-  const { slug } = await params;
-  const currentSlug = decodeURIComponent(slug);
+// 🎯 실제 폴더 구조인 src/data/keywords.json 경로로 정밀 타격!
+import branchData from '../../src/data/keywords.json';
 
-  // 마스터 데이터에서 현재 슬러그 지점 매칭
+// Next.js 15 빌드 머신 규격에 맞춘 async/await 래핑 구조
+export default async function BranchDetail(props) {
+  // 1. 공식 가이드라인대로 props를 먼저 await 한 뒤 params unwrap 진행
+  const resolvedProps = await props;
+  const params = await resolvedProps.params;
+  const currentSlug = decodeURIComponent(params.slug);
+
+  // 2. 마스터 데이터에서 현재 슬러그 지점 정밀 매칭
   const branch = branchData.find((item) => item.slug === currentSlug);
 
   // 예외 처리: 일치하는 지점이 없을 때의 안전 복귀 가이드
@@ -23,7 +26,7 @@ export default async function BranchDetail({ params }) {
     );
   }
 
-  // 💰 [요구사항 2번] 제주 유무를 판별하여 수강료 요율 자동 차등 분기
+  // 💰 [요구사항 2번] 제주 거점 유무를 판별하여 수강료 요율 자동 차등 분기
   const isJeju = branch.주소 && branch.주소.includes('제주');
   const priceTable = isJeju 
     ? { elementary: '60,000원', middle: '65,000원', high: '75,000원', desc: '제주 거점 프리미엄 교육비 요율 적용' }
@@ -41,7 +44,7 @@ export default async function BranchDetail({ params }) {
         <div style={{ width: '20px' }}></div>
       </div>
 
-      {/* 홍보 배너 인프라 */}
+      {/* [요구사항 3, 4번] 지점별 커스텀 마케팅 배너 인프라 */}
       <div style={{ padding: '35px 20px', backgroundColor: '#f1f5f9', borderBottom: '4px solid #ea580c', textAlign: 'center' }}>
         <span style={{ backgroundColor: '#1e40af', color: '#ffffff', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold' }}>
           {branch.시도 || '인증'} 거점 공식 지정 센터
@@ -77,7 +80,7 @@ export default async function BranchDetail({ params }) {
           <div style={{ backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
             <strong style={{ color: '#ea580c', fontSize: '14.5px', display: 'block', marginBottom: '4px' }}>2. {branch.지점명} 인근 학교 완벽 분석 밀착 기출관리</strong>
             <span style={{ fontSize: '13px', color: '#475569', lineHeight: '1.5', display: 'block' }}>
-              인근 <strong>{branch.타깃학교 || '학교별'}</strong>의 최근중간·기말고사 출제 경향, 수행평가 유형을 철저하게 해부하여 학교별 맞춤 기출 마킹 레이아웃을 제공합니다.
+              인근 <strong>{branch.타깃학교 || '학교별'}</strong>의 최근 중간·기말고사 출제 경향, 수행평가 유형을 철저하게 해부하여 학교별 맞춤 기출 마킹 레이아웃을 제공합니다.
             </span>
           </div>
 
@@ -90,7 +93,7 @@ export default async function BranchDetail({ params }) {
         </div>
       </div>
 
-      {/* 수강료 안내 구역 */}
+      {/* [요구사항 2번] 분기된 수강료 테이블 안내 구역 */}
       <div style={{ padding: '10px 20px 30px 20px' }}>
         <h3 style={{ fontSize: '17px', color: '#0f172a', fontWeight: '800', margin: '0 0 4px 0', borderLeft: '4px solid #1e40af', paddingLeft: '8px' }}>
           정식 교습비(수강료) 안내
@@ -117,7 +120,7 @@ export default async function BranchDetail({ params }) {
         </div>
       </div>
 
-      {/* 상담 예약 외부 링크 연동 구역 */}
+      {/* [요구사항 5번 인프라] 외부 접수 채널 폼 연동 구역 */}
       <div style={{ padding: '30px 20px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>
         <h3 style={{ fontSize: '19px', color: '#1e3a8a', fontWeight: '900', margin: '0 0 6px 0' }}>
           📝 {branch.지점명} 실시간 무료 상담 신청
@@ -126,13 +129,12 @@ export default async function BranchDetail({ params }) {
           학부모 전용 안심 채널입니다. 원활한 1:1 예약 배정을 위해<br/>
           아래 공식 접수처를 통해 즉시 상담 예약을 매칭해 드립니다.
         </p>
-        
         <a href="https://forms.gle/4XvN7W88p6qZtY8u5" target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', padding: '16px', backgroundColor: '#ea580c', color: '#ffffff', textDecoration: 'none', borderRadius: '6px', fontSize: '15px', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(234,88,12,0.15)', boxSizing: 'border-box' }}>
           와와 {branch.지점명} 1:1 상담 예약하기 (공식 안심 폼) ➔
         </a>
       </div>
 
-      {/* 법적 고지 푸터 */}
+      {/* 법적 가이드 푸터 판넬 */}
       <div style={{ padding: '24px 20px', backgroundColor: '#1e293b', color: '#94a3b8', fontSize: '11.5px', lineHeight: '1.6' }}>
         <p style={{ margin: '0 0 6px 0', color: '#cbd5e1', fontWeight: 'bold' }}>WAWA LEARNING COACHING CENTER</p>
         <p style={{ margin: '0 0 4px 0' }}>공식 지정 등록처: 와와학습코칭센터 {branch.지점명}</p>
