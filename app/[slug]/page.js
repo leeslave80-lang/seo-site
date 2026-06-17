@@ -1,16 +1,17 @@
+// 🚨 [전체 빌드 지옥 종결 스위치] 미리 구워내지 말고 사용자가 접속할 때 실시간으로 데이터를 로드하라고 버셀 엔진에 강제 지시합니다.
+export const dynamic = 'force-dynamic';
+
 import React from 'react';
 import Link from 'next/link';
-// 🎯 상훈님의 실제 데이터 파일 구조 주소 정밀 타격!
+// 🎯 상훈님의 실제 데이터 파일 위치 정밀 매칭
 import branchData from '../../src/data/keywords.json';
 
-// Next.js 15 빌드 머신이 100% 이해하는 표준 async/await 파라미터 구조
 export default async function BranchDetail({ params }) {
-  // 🚨 [핵심 수정] 버셀이 최적화 실패했다고 징징댄 원인! 
-  // Next.js 15에서는 params 자체를 반드시 'await'로 먼저 풀어주어야 라우터 최적화 에러가 안 납니다!
+  // Next.js 15 규격에 맞춰 params를 안전하게 await unwrap
   const resolvedParams = await params;
   const currentSlug = decodeURIComponent(resolvedParams.slug);
 
-  // 마스터 데이터에서 현재 슬러그 지점 매칭
+  // 206개 마스터 데이터에서 현재 주소(slug)와 딱 맞는 지점 매칭
   const branch = branchData.find((item) => item.slug === currentSlug);
 
   // 예외 처리: 데이터 매칭 실패 시 안전 탈출구
