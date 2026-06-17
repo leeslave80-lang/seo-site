@@ -2,16 +2,16 @@ import React from 'react';
 import Link from 'next/link';
 import branchData from '@/data/keywords.json';
 
-// Next.js 15+ 빌드 규격을 통과하기 위해 순수 async/await 함수로만 구성 (use client 절대 금지)
-export default async function BranchDetail({ params }) {
-  // 1. Next.js 15가 원하는 방식 그대로 params 약속(Promise) 해제
-  const resolvedParams = await params;
+// Next.js 15 빌드 머신이 요구하는 가장 엄격한 형태의 파라미터 인터페이스 정의 준수
+export default async function BranchDetail(props) {
+  // 1. 빌드러가 딴지 걸지 못하도록 props에서 params를 명시적으로 꺼내와 await로 언랩핑
+  const resolvedParams = await props.params;
   const currentSlug = decodeURIComponent(resolvedParams.slug);
 
-  // 2. 마스터 데이터에서 현재 슬러그 지점 매칭
+  // 2. 마스터 데이터에서 현재 슬러그 지점 정밀 매칭
   const branch = branchData.find((item) => item.slug === currentSlug);
 
-  // 예외 처리: 일치하는 지점이 없을 때의 복귀 가이드
+  // 예외 처리: 일치하는 지점이 없을 때의 안전 복귀 가이드
   if (!branch) {
     return (
       <div style={{ padding: '50px 20px', textAlign: 'center', fontFamily: '"Noto Sans KR", sans-serif' }}>
@@ -30,7 +30,7 @@ export default async function BranchDetail({ params }) {
     : { elementary: '70,000원', middle: '75,000원', high: '85,000원', desc: '수도권 및 광역 표준 교육비 요율 적용' };
 
   return (
-    <main style={{ padding: '0', maxWidth: '540px', margin: '0 auto', fontFamily: '"Noto Sans KR", sans-serif', color: '#1e293b', backgroundColor: '#ffffff', minHeight: '100vh', boxShadow: '0 0 20px rgba(0,0,0,0.05)' }}>
+    <main style={{ padding: '0', maxWidth: '540px', margin: '0 auto', fontFamily: '"Noto Sans KR", sans-serif', color: '#1e293b', backgroundColor: '#ffffff', minHeight: '100vh', boxShadow: '0 0 20px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
       
       {/* 고정 상단 네비게이션 */}
       <div style={{ backgroundColor: '#1e40af', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -117,7 +117,7 @@ export default async function BranchDetail({ params }) {
         </div>
       </div>
 
-      {/* 상담 예약 구글 폼 연동 구역 */}
+      {/* 상담 예약 구글 폼 다이렉트 연동 구역 */}
       <div style={{ padding: '30px 20px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>
         <h3 style={{ fontSize: '19px', color: '#1e3a8a', fontWeight: '900', margin: '0 0 6px 0' }}>
           📝 {branch.지점명} 실시간 무료 상담 신청
