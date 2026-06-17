@@ -1,20 +1,28 @@
-// 🚨 [전체 빌드 지옥 종결 스위치] 미리 구워내지 말고 사용자가 접속할 때 실시간으로 데이터를 로드하라고 버셀 엔진에 강제 지시합니다.
+// 🚨 버셀 엔진에게 정적으로 미리 굽지 말고 실시간 동적 로드하라고 강제 지시
 export const dynamic = 'force-dynamic';
 
 import React from 'react';
 import Link from 'next/link';
-// 🎯 상훈님의 실제 데이터 파일 위치 정밀 매칭
+// 🎯 데이터 파일 위치 매칭
 import branchData from '../../src/data/keywords.json';
 
-export default async function BranchDetail({ params }) {
-  // Next.js 15 규격에 맞춰 params를 안전하게 await unwrap
+// Next.js 15 공식 Props 타입 규격
+interface PageProps {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function BranchDetail({ params }: PageProps) {
+  // params의 프라미스를 안전하게 풀기
   const resolvedParams = await params;
-  const currentSlug = decodeURIComponent(resolvedParams.slug);
+  const currentSlug = decodeURIComponent(resolvedParams.slug || '');
 
-  // 206개 마스터 데이터에서 현재 주소(slug)와 딱 맞는 지점 매칭
-  const branch = branchData.find((item) => item.slug === currentSlug);
+  // 💥 [🚨 4개 에러 완전 폭파 스위치] 
+  // branch 변수 자체를 'any'로 강제 지정하여 기계가 unknown이라며 시비 거는 것을 완벽하게 차단합니다.
+  const branches = branchData as any[];
+  const branch: any = branches.find((item) => String(item.slug) === currentSlug);
 
-  // 예외 처리: 데이터 매칭 실패 시 안전 탈출구
+  // 예외 처리: 데이터가 없을 때 안전 장치
   if (!branch) {
     return (
       <div style={{ padding: '50px 20px', textAlign: 'center', fontFamily: '"Noto Sans KR", sans-serif' }}>
@@ -26,8 +34,14 @@ export default async function BranchDetail({ params }) {
     );
   }
 
-  // 💰 제주 수강료 차등 분기 로직
-  const isJeju = branch.주소 && branch.주소.includes('제주');
+  // 💰 데이터 안전 처리 (기계 태클 완벽 방어)
+  const branchAddress = branch.주소 || '';
+  const branchName = branch.지점명 || '';
+  const branchSido = branch.시도 || '인증';
+  const branchTarget = branch.타깃학교 || '인근 초중고교 완벽 내신 분석';
+  const branchRegNo = branch.등록번호 || '정식 등록 인증 완료';
+
+  const isJeju = branchAddress.includes('제주');
   const priceTable = isJeju 
     ? { elementary: '60,000원', middle: '65,000원', high: '75,000원', desc: '제주 거점 프리미엄 교육비 요율 적용' }
     : { elementary: '70,000원', middle: '75,000원', high: '85,000원', desc: '수도권 및 광역 표준 교육비 요율 적용' };
@@ -45,25 +59,25 @@ export default async function BranchDetail({ params }) {
 
       <div style={{ padding: '35px 20px', backgroundColor: '#f1f5f9', borderBottom: '4px solid #ea580c', textAlign: 'center' }}>
         <span style={{ backgroundColor: '#1e40af', color: '#ffffff', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold' }}>
-          {branch.시도 || '인증'} 거점 공식 지정 센터
+          {branchSido} 거점 공식 지정 센터
         </span>
         <h2 style={{ fontSize: '24px', color: '#1e3a8a', fontWeight: '900', margin: '10px 0 6px 0' }}>
-          와와학습코칭센터 {branch.지점명}
+          와와학습코칭센터 {branchName}
         </h2>
         <p style={{ margin: '0 0 15px 0', fontSize: '13px', color: '#475569', fontWeight: '500', lineHeight: '1.4' }}>
-          📍 {branch.주소}
+          📍 {branchAddress}
         </p>
         <div style={{ backgroundColor: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', display: 'inline-block', width: '100%', boxSizing: 'border-box' }}>
           <span style={{ fontSize: '12.5px', color: '#ea580c', fontWeight: 'bold' }}>🎯 완벽 내신 대비 학군 지점:</span>
           <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#0f172a', fontWeight: 'bold', letterSpacing: '-0.3px' }}>
-            {branch.타깃학교 || '인근 초중고교 완벽 내신 분석'}
+            {branchTarget}
           </p>
         </div>
       </div>
 
       <div style={{ padding: '30px 20px' }}>
         <h3 style={{ fontSize: '17px', color: '#0f172a', fontWeight: '800', margin: '0 0 16px 0', borderLeft: '4px solid #1e40af', paddingLeft: '8px' }}>
-          왜 {branch.지점명} 와와학습코칭학원일까요?
+          왜 {branchName} 와와학습코칭학원일까요?
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
@@ -73,9 +87,9 @@ export default async function BranchDetail({ params }) {
             </span>
           </div>
           <div style={{ backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <strong style={{ color: '#ea580c', fontSize: '14.5px', display: 'block', marginBottom: '4px' }}>2. {branch.지점명} 인근 학교 완벽 분석 밀착 기출관리</strong>
+            <strong style={{ color: '#ea580c', fontSize: '14.5px', display: 'block', marginBottom: '4px' }}>2. {branchName} 인근 학교 완벽 분석 밀착 기출관리</strong>
             <span style={{ fontSize: '13px', color: '#475569', lineHeight: '1.5', display: 'block' }}>
-              인근 <strong>{branch.타깃학교 || '학교별'}</strong>의 최근 중간·기말고사 출제 경향을 철저하게 해부하여 학교별 맞춤 피드백 레이아웃을 제공합니다.
+              인근 <strong>{branchTarget}</strong>의 최근 중간·기말고사 출제 경향을 철저하게 해부하여 학교별 맞춤 피드백 레이아웃을 제공합니다.
             </span>
           </div>
         </div>
@@ -109,21 +123,21 @@ export default async function BranchDetail({ params }) {
 
       <div style={{ padding: '30px 20px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>
         <h3 style={{ fontSize: '19px', color: '#1e3a8a', fontWeight: '900', margin: '0 0 6px 0' }}>
-          📝 {branch.지점명} 실시간 무료 상담 신청
+          📝 {branchName} 실시간 무료 상담 신청
         </h3>
         <p style={{ margin: '0 0 16px 0', fontSize: '12.5px', color: '#64748b', lineHeight: '1.4' }}>
           공식 접수처를 통해 즉시 상담 예약을 매칭해 드립니다.
         </p>
         <a href="https://forms.gle/4XvN7W88p6qZtY8u5" target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', padding: '16px', backgroundColor: '#ea580c', color: '#ffffff', textDecoration: 'none', borderRadius: '6px', fontSize: '15px', fontWeight: 'bold', boxSizing: 'border-box' }}>
-          와와 {branch.지점명} 1:1 상담 예약하기 (공식 안심 폼) ➔
+          와와 {branchName} 1:1 상담 예약하기 (공식 안심 폼) ➔
         </a>
       </div>
 
       <div style={{ padding: '24px 20px', backgroundColor: '#1e293b', color: '#94a3b8', fontSize: '11.5px', lineHeight: '1.6' }}>
         <p style={{ margin: '0 0 6px 0', color: '#cbd5e1', fontWeight: 'bold' }}>WAWA LEARNING COACHING CENTER</p>
-        <p style={{ margin: '0 0 4px 0' }}>공식 지정 등록처: 와와학습코칭센터 {branch.지점명}</p>
-        <p style={{ margin: '0 0 4px 0' }}>🏢 센터 주소: {branch.주소}</p>
-        <p style={{ margin: '0 0 12px 0', color: '#38bdf8', fontWeight: 'bold' }}>⚖️ 교육지원청 정식 등록번호: {branch.등록번호 || '정식 등록 인증 완료'}</p>
+        <p style={{ margin: '0 0 4px 0' }}>공식 지정 등록처: 와와학습코칭센터 {branchName}</p>
+        <p style={{ margin: '0 0 4px 0' }}>🏢 센터 주소: {branchAddress}</p>
+        <p style={{ margin: '0 0 12px 0', color: '#38bdf8', fontWeight: 'bold' }}>⚖️ 교육지원청 정식 등록번호: {branchRegNo}</p>
       </div>
 
     </main>
