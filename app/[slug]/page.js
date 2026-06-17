@@ -1,29 +1,17 @@
-'use client';
-
-import React, { useState, use } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import branchData from '@/data/keywords.json';
 
-// Next.js 15+ App Router Page 표준 타입 명세 100% 매칭 구조
-export default function BranchDetail({ params }) {
-  // 1. Next.js 15 규격에 따라 Promise 형태의 params를 클라이언트 단에서 안전하게 unwrap
-  const resolvedParams = use(params);
+// 1. 버셀 빌드 머신이 요구하는 정식 'async function' 페이지 컴포넌트 구조 정의
+export default async function BranchDetail({ params }) {
+  // 2. Next.js 15가 원하는 방식대로 await를 사용해 동적 파라미터를 완벽하게 수신
+  const resolvedParams = await params;
   const currentSlug = decodeURIComponent(resolvedParams.slug);
 
-  // 2. 마스터 데이터에서 현재 슬러그 지점 매칭
+  // 3. 마스터 데이터에서 현재 슬러그 지점 매칭
   const branch = branchData.find((item) => item.slug === currentSlug);
 
-  // 3. 상담 신청 폼 상태 관리
-  const [formData, setFormData] = useState({
-    studentName: '',
-    parentPhone: '',
-    schoolName: '',
-    dongAddress: '',
-    grade: '초등 과정',
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // 예외 처리: 지점을 찾지 못했을 때의 화면 복귀 가이드
+  // 예외 처리: 일치하는 지점이 없을 때의 안전 복귀 가이드
   if (!branch) {
     return (
       <div style={{ padding: '50px 20px', textAlign: 'center', fontFamily: '"Noto Sans KR", sans-serif' }}>
@@ -40,45 +28,6 @@ export default function BranchDetail({ params }) {
   const priceTable = isJeju 
     ? { elementary: '60,000원', middle: '65,000원', high: '75,000원', desc: '제주 거점 프리미엄 교육비 요율 적용' }
     : { elementary: '70,000원', middle: '75,000원', high: '85,000원', desc: '수도권 및 광역 표준 교육비 요율 적용' };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // 실시간 슬랙 메시지 연동 전송 로직
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    const slackText = `🚨 [와와학습코칭센터 실시간 상담 신청] 🚨\n\n` +
-                      `🏢 신청지점: 와와학습코칭센터 ${branch.지점명}\n` +
-                      `👤 학생이름: ${formData.studentName}\n` +
-                      `📱 학부모 연락처: ${formData.parentPhone}\n` +
-                      `🏫 학교명: ${formData.schoolName}\n` +
-                      `📍 거주하시는 동이름: ${formData.dongAddress}\n` +
-                      `🎓 학생 학년: ${formData.grade}\n` +
-                      `────────────────────────\n` +
-                      `📢 배정된 센터장님은 확인 즉시 학부모님께 해피콜 안내 바랍니다.`;
-
-    try {
-      const res = await fetch('/api/slack', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: slackText }),
-      });
-
-      if (res.ok) {
-        alert(`🎉 무료 상담 예약이 정상 접수되었습니다!\n가장 가까운 와와학습코칭센터 ${branch.지점명}에서 신속하게 연락드리겠습니다.`);
-        setFormData({ studentName: '', parentPhone: '', schoolName: '', dongAddress: '', grade: '초등 과정' });
-      } else {
-        alert('서버 전송에 실패했습니다. 잠시 후 다시 시도해 주세요.');
-      }
-    } catch (err) {
-      alert('오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <main style={{ padding: '0', maxWidth: '540px', margin: '0 auto', fontFamily: '"Noto Sans KR", sans-serif', color: '#1e293b', backgroundColor: '#ffffff', minHeight: '100vh', boxShadow: '0 0 20px rgba(0,0,0,0.05)' }}>
@@ -168,56 +117,20 @@ export default function BranchDetail({ params }) {
         </div>
       </div>
 
-      {/* 상담 예약 오렌지 안심 폼 */}
-      <div style={{ padding: '30px 20px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <h3 style={{ fontSize: '19px', color: '#1e3a8a', fontWeight: '900', margin: '0 0 6px 0' }}>
-            📝 {branch.지점명} 실시간 상담예약 신청
-          </h3>
-          <p style={{ margin: '0', fontSize: '12.5px', color: '#64748b', lineHeight: '1.4' }}>
-            학부모 전용 안심 폼입니다. 아래 정보를 기입해 주시면<br/>
-            가장 가까운 센터에서 직접 맞춤형 정밀 학습 진단을 도와드립니다.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>학생 이름</label>
-            <input type="text" name="studentName" required value={formData.studentName} onChange={handleChange} placeholder="예: 홍길동" style={{ width: '100%', padding: '11px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13.5px', boxSizing: 'border-box', outline: 'none' }} />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>학부모님 연락처</label>
-            <input type="tel" name="parentPhone" required value={formData.parentPhone} onChange={handleChange} placeholder="예: 010-1234-5678" style={{ width: '100%', padding: '11px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13.5px', boxSizing: 'border-box', outline: 'none' }} />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>학교명</label>
-            <input type="text" name="schoolName" required value={formData.schoolName} onChange={handleChange} placeholder="예: 한라중학교" style={{ width: '100%', padding: '11px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13.5px', boxSizing: 'border-box', outline: 'none' }} />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>주소 (거주하시는 동이름)</label>
-            <input type="text" name="dongAddress" required value={formData.dongAddress} onChange={handleChange} placeholder="예: 노형동 (가까운 지점으로 매칭 및 상담드리겠습니다)" style={{ width: '100%', padding: '11px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13.5px', boxSizing: 'border-box', outline: 'none' }} />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>학생 학년</label>
-            <select name="grade" value={formData.grade} onChange={handleChange} style={{ width: '100%', padding: '11px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13.5px', backgroundColor: '#ffffff', boxSizing: 'border-box', outline: 'none' }}>
-              <option value="초등 과정">초등 과정</option>
-              <option value="중학교 1학년">중학교 1학년</option>
-              <option value="중학교 2학년">중학교 2학년</option>
-              <option value="중학교 3학년">중학교 3학년</option>
-              <option value="고등학교 1학년">고등학교 1학년</option>
-              <option value="고등학교 2학년">고등학교 2학년</option>
-              <option value="고등학교 3학년">고등학교 3학년</option>
-            </select>
-          </div>
-
-          <button type="submit" disabled={isSubmitting} style={{ width: '100%', padding: '15px', backgroundColor: '#ea580c', color: '#ffffff', border: 'none', borderRadius: '6px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px', transition: 'background-color 0.2s', boxShadow: '0 4px 6px rgba(234,88,12,0.15)' }}>
-            {isSubmitting ? '전송 중... 🚀' : `와와 ${branch.지점명}에 무료 상담 신청하기 ➔`}
-          </button>
-        </form>
+      {/* 상담 예약 다이렉트 링크 (네이버 폼 또는 플레이스 연동용 마크업 인프라) */}
+      <div style={{ padding: '30px 20px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>
+        <h3 style={{ fontSize: '19px', color: '#1e3a8a', fontWeight: '900', margin: '0 0 6px 0' }}>
+          📝 {branch.지점명} 실시간 무료 상담 신청
+        </h3>
+        <p style={{ margin: '0 0 16px 0', fontSize: '12.5px', color: '#64748b', lineHeight: '1.4' }}>
+          학부모 전용 안심 채널입니다. 원활한 1:1 예약 배정을 위해<br/>
+          아래 공식 접수처를 통해 즉시 상담 예약을 매칭해 드립니다.
+        </p>
+        
+        {/* 상훈님의 마케팅 DB 수집 링크 주소 입력 구역 */}
+        <a href="https://forms.gle/4XvN7W88p6qZtY8u5" target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', padding: '16px', backgroundColor: '#ea580c', color: '#ffffff', textDecoration: 'none', borderRadius: '6px', fontSize: '15px', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(234,88,12,0.15)' }}>
+          와와 {branch.지점명} 1:1 상담 예약하기 (구글/네이버 폼 연동) ➔
+        </a>
       </div>
 
       {/* 법적 가이드 푸터 */}
