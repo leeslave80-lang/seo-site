@@ -2,29 +2,24 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-// 🎯 데이터 파일 위치 매칭
-import keywordsData from '../src/data/keywords.json'; 
+// 🎯 [🚨 상훈님 지적 완벽 반영 정답 경로] app 폴더를 나가서 data 폴더로 직행합니다.
+import keywordsData from '../data/keywords.json'; 
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('전체');
 
-  // 1. 대형 지역 구분을 위한 분류 로직
   const regions = ['전체', '서울', '경기', '인천', '대전', '충청', '부산', '대구', '경상', '광주', '전라', '강원', '제주'];
 
-  // 2. 검색 및 지역 탭 필터링 마스터 시스템 (순수 JS 문법으로 복원하여 에러 제거)
   const filteredBranches = keywordsData.filter((item) => {
     const regionName = item.지역 || '';
     const branchName = item.지점명 || '';
     
-    // 검색어 매칭
     const matchesSearch = regionName.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           branchName.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // 탭 선택 매칭
     if (selectedRegion === '전체') return matchesSearch;
     
-    // 세부 도외 분기 처리
     if (selectedRegion === '충청') return matchesSearch && (regionName.includes('충남') || regionName.includes('충북') || regionName.includes('세종'));
     if (selectedRegion === '경상') return matchesSearch && (regionName.includes('경남') || regionName.includes('경북'));
     if (selectedRegion === '전라') return matchesSearch && (regionName.includes('전남') || regionName.includes('전북'));
@@ -35,14 +30,12 @@ export default function Home() {
   return (
     <main style={{ padding: '0', maxWidth: '540px', margin: '0 auto', fontFamily: '"Noto Sans KR", sans-serif', color: '#1e293b', backgroundColor: '#ffffff', minHeight: '100vh', boxShadow: '0 0 20px rgba(0,0,0,0.05)' }}>
       
-      {/* 랜드마크 헤더 */}
       <div style={{ backgroundColor: '#1e40af', padding: '16px', textAlign: 'center' }}>
         <h1 style={{ margin: '0', fontSize: '15px', color: '#ffffff', fontWeight: '800', letterSpacing: '1px' }}>
           WAWA LEARNING COACHING CENTER
         </h1>
       </div>
 
-      {/* 대문 마케팅 배너 */}
       <div style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
         <div style={{ display: 'inline-block', backgroundColor: '#ea580c', color: '#ffffff', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', marginBottom: '12px' }}>
           전국 거점 공식 지점 보유
@@ -57,7 +50,6 @@ export default function Home() {
         </p>
       </div>
 
-      {/* 🔍 실시간 우리 동네 지점 검색창 */}
       <div style={{ padding: '20px' }}>
         <div style={{ position: 'relative' }}>
           <input 
@@ -70,7 +62,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 🗺️ 대한민국 지역별 필터 탭 */}
       <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', padding: '0 20px 15px 20px', whiteSpace: 'nowrap', WebkitOverflowScrolling: 'touch' }}>
         {regions.map((region) => (
           <button
@@ -93,7 +84,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* 🏢 지점 리스트 대량 출력 판넬 */}
       <div style={{ padding: '10px 20px 40px 20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
           <span style={{ fontSize: '13px', color: '#64748b' }}>
@@ -112,7 +102,6 @@ export default function Home() {
         {filteredBranches.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {filteredBranches.map((item, idx) => {
-              // 🚨 순수 JS 문법으로 변환하여 문법 에러를 완벽 차단
               const targetSlug = item.slug ? String(item.slug) : '';
 
               return (
