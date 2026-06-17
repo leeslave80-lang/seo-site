@@ -2,18 +2,17 @@
 
 import React, { useState, use } from 'react';
 import Link from 'next/link';
-import branchData from '../../data/keywords.json';
+import branchData from '@/data/keywords.json';
 
-// Next.js 빌드 시 타입 에러를 원천 차단하기 위한 엄격한 컴포넌트 타입 가이드 적용
 export default function BranchDetail({ params }) {
-  // 1. Next.js 동적 파라미터를 안전하게 해제 (Promise 안전 언랩핑)
+  // 1. Next.js 15+ 규격에 맞춘 파라미터 비동기 해제
   const resolvedParams = use(params);
   const currentSlug = decodeURIComponent(resolvedParams.slug);
 
-  // 2. 전국 206개 완전체 DB에서 현재 슬러그와 매칭되는 지점 확인
+  // 2. 마스터 데이터에서 현재 슬러그 지점 매칭
   const branch = branchData.find((item) => item.slug === currentSlug);
 
-  // 3. 상담 신청 폼 상태 관리 정의
+  // 3. 상담예약 폼 상태 선언
   const [formData, setFormData] = useState({
     studentName: '',
     parentPhone: '',
@@ -23,35 +22,34 @@ export default function BranchDetail({ params }) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 지점 데이터를 찾지 못했을 때 예외 처리 행선지
+  // 예외 처리: 일치하는 지점이 없을 때
   if (!branch) {
     return (
       <div style={{ padding: '50px 20px', textAlign: 'center', fontFamily: '"Noto Sans KR", sans-serif' }}>
-        <h2>존재하지 않거나 이전된 센터 페이지입니다.</h2>
-        <Link href="/" style={{ color: '#1e40af', fontWeight: 'bold', textDecoration: 'underline' }}>
-          🏠 메인 페이지로 돌아가기
+        <h2 style={{ fontSize: '16px', color: '#1e293b' }}>존재하지 않거나 이전된 센터 페이지입니다.</h2>
+        <Link href="/" style={{ color: '#1e40af', fontWeight: 'bold', textDecoration: 'underline', display: 'inline-block', marginTop: '12px' }}>
+          🏠 와와학습코칭센터 메인으로 가기
         </Link>
       </div>
     );
   }
 
-  // 💰 지점 주소 기반 정확한 수강료 요율 자동 계산 엔진
+  // 💰 제주 유무를 판별하여 수강료 요율 자동 차등 분기
   const isJeju = branch.주소.includes('제주');
   const priceTable = isJeju 
     ? { elementary: '60,000원', middle: '65,000원', high: '75,000원', desc: '제주 거점 프리미엄 교육비 요율 적용' }
     : { elementary: '70,000원', middle: '75,000원', high: '85,000원', desc: '수도권 및 광역 표준 교육비 요율 적용' };
 
-  // 폼 입력 핸들러
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 슬랙 실시간 전송 프로세스
+  // 실시간 슬랙 메시지 전송 로직
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const slackText = `🚨 [와와학습코칭센터 상담예약 알림] 🚨\n\n` +
+    const slackText = `🚨 [와와학습코칭센터 실시간 상담 신청] 🚨\n\n` +
                       `🏢 신청지점: 와와학습코칭센터 ${branch.지점명}\n` +
                       `👤 학생이름: ${formData.studentName}\n` +
                       `📱 학부모 연락처: ${formData.parentPhone}\n` +
@@ -59,7 +57,7 @@ export default function BranchDetail({ params }) {
                       `📍 거주하시는 동이름: ${formData.dongAddress}\n` +
                       `🎓 학생 학년: ${formData.grade}\n` +
                       `────────────────────────\n` +
-                      `📢 해당 지역 센터장은 신속히 학부모님께 연락바랍니다.`;
+                      `📢 배정된 센터장님은 확인 즉시 학부모님께 해피콜 안내 바랍니다.`;
 
     try {
       const res = await fetch('/api/slack', {
@@ -69,13 +67,13 @@ export default function BranchDetail({ params }) {
       });
 
       if (res.ok) {
-        alert(`🎉 상담 예약이 정상적으로 접수되었습니다!\n가까운 ${branch.지점명}의 전문 코칭 디렉터가 신속하게 연락드리겠습니다.`);
+        alert(`🎉 무료 상담 예약이 정상 접수되었습니다!\n가장 가까운 와와학습코칭센터 ${branch.지점명}에서 신속하게 연락드리겠습니다.`);
         setFormData({ studentName: '', parentPhone: '', schoolName: '', dongAddress: '', grade: '초등 과정' });
       } else {
         alert('서버 전송에 실패했습니다. 잠시 후 다시 시도해 주세요.');
       }
     } catch (err) {
-      alert('오류가 발생했습니다. 고객센터로 문의 바랍니다.');
+      alert('오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
     } finally {
       setIsSubmitting(false);
     }
@@ -84,7 +82,7 @@ export default function BranchDetail({ params }) {
   return (
     <main style={{ padding: '0', maxWidth: '540px', margin: '0 auto', fontFamily: '"Noto Sans KR", sans-serif', color: '#1e293b', backgroundColor: '#ffffff', minHeight: '100vh', boxShadow: '0 0 20px rgba(0,0,0,0.05)' }}>
       
-      {/* 고정 탑 네비게이션 헤더 */}
+      {/* 고정 상단 네비게이션 */}
       <div style={{ backgroundColor: '#1e40af', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href="/" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '18px', fontWeight: 'bold' }}>🔙</Link>
         <h1 style={{ margin: '0', fontSize: '14px', color: '#ffffff', fontWeight: '800', letterSpacing: '0.5px' }}>
@@ -93,10 +91,10 @@ export default function BranchDetail({ params }) {
         <div style={{ width: '20px' }}></div>
       </div>
 
-      {/* 지점 전용 스페셜 마케팅 비주얼 배너 구역 */}
+      {/* 홍보 배너 인프라 */}
       <div style={{ padding: '35px 20px', backgroundColor: '#f1f5f9', borderBottom: '4px solid #ea580c', textAlign: 'center' }}>
         <span style={{ backgroundColor: '#1e40af', color: '#ffffff', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold' }}>
-          {branch.시도} 거점 공식 인증 센터
+          {branch.시도} 거점 공식 지정 센터
         </span>
         <h2 style={{ fontSize: '24px', color: '#1e3a8a', fontWeight: '900', margin: '10px 0 6px 0' }}>
           와와학습코칭센터 {branch.지점명}
@@ -112,7 +110,7 @@ export default function BranchDetail({ params }) {
         </div>
       </div>
 
-      {/* 학부모들의 마음을 사로잡는 강력한 3대 코칭 포인트 문구 */}
+      {/* 특장점 마케팅 카피 판넬 */}
       <div style={{ padding: '30px 20px' }}>
         <h3 style={{ fontSize: '17px', color: '#0f172a', fontWeight: '800', margin: '0 0 16px 0', borderLeft: '4px solid #1e40af', paddingLeft: '8px' }}>
           왜 {branch.지점명} 와와학습코칭학원일까요?
@@ -142,7 +140,7 @@ export default function BranchDetail({ params }) {
         </div>
       </div>
 
-      {/* 수강료 안내 섹션 (지점별 요율 완벽 반영) */}
+      {/* 수강료 안내 구역 */}
       <div style={{ padding: '10px 20px 30px 20px' }}>
         <h3 style={{ fontSize: '17px', color: '#0f172a', fontWeight: '800', margin: '0 0 4px 0', borderLeft: '4px solid #1e40af', paddingLeft: '8px' }}>
           정식 교습비(수강료) 안내
@@ -169,7 +167,7 @@ export default function BranchDetail({ params }) {
         </div>
       </div>
 
-      {/* 상담예약 폼 판넬 */}
+      {/* 상담 예약 오렌지 안심 폼 */}
       <div style={{ padding: '30px 20px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h3 style={{ fontSize: '19px', color: '#1e3a8a', fontWeight: '900', margin: '0 0 6px 0' }}>
@@ -193,7 +191,7 @@ export default function BranchDetail({ params }) {
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>School Name (학교명)</label>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>학교명</label>
             <input type="text" name="schoolName" required value={formData.schoolName} onChange={handleChange} placeholder="예: 한라중학교" style={{ width: '100%', padding: '11px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13.5px', boxSizing: 'border-box', outline: 'none' }} />
           </div>
 
@@ -221,7 +219,7 @@ export default function BranchDetail({ params }) {
         </form>
       </div>
 
-      {/* 푸터 */}
+      {/* 법적 가이드 푸터 */}
       <div style={{ padding: '24px 20px', backgroundColor: '#1e293b', color: '#94a3b8', fontSize: '11.5px', lineHeight: '1.6' }}>
         <p style={{ margin: '0 0 6px 0', color: '#cbd5e1', fontWeight: 'bold' }}>WAWA LEARNING COACHING CENTER</p>
         <p style={{ margin: '0 0 4px 0' }}>공식 지정 등록처: 와와학습코칭센터 {branch.지점명}</p>
