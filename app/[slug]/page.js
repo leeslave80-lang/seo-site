@@ -1,27 +1,31 @@
 import React from 'react';
 import Link from 'next/link';
-
-// 🎯 확인된 실제 폴더 구조(src/data/) 경로로 정밀 타격!
+// 🎯 상훈님의 실제 데이터 파일 구조 주소 정밀 타격!
 import branchData from '../../src/data/keywords.json';
 
-export default async function BranchDetail(props) {
-  const resolvedProps = await props;
-  const params = await resolvedProps.params;
-  const currentSlug = decodeURIComponent(params.slug);
+// Next.js 15 빌드 머신이 100% 이해하는 표준 async/await 파라미터 구조
+export default async function BranchDetail({ params }) {
+  // 🚨 [핵심 수정] 버셀이 최적화 실패했다고 징징댄 원인! 
+  // Next.js 15에서는 params 자체를 반드시 'await'로 먼저 풀어주어야 라우터 최적화 에러가 안 납니다!
+  const resolvedParams = await params;
+  const currentSlug = decodeURIComponent(resolvedParams.slug);
 
+  // 마스터 데이터에서 현재 슬러그 지점 매칭
   const branch = branchData.find((item) => item.slug === currentSlug);
 
+  // 예외 처리: 데이터 매칭 실패 시 안전 탈출구
   if (!branch) {
     return (
       <div style={{ padding: '50px 20px', textAlign: 'center', fontFamily: '"Noto Sans KR", sans-serif' }}>
-        <h2 style={{ fontSize: '16px', color: '#1e293b' }}>존재하지 않거나 이전된 센터 페이지입니다.</h2>
-        <Link href="/" style={{ color: '#1e40af', fontWeight: 'bold', textDecoration: 'underline', display: 'inline-block', marginTop: '12px' }}>
+        <h2 style={{ fontSize: '16px', color: '#1e293b' }}>존재하지 않거나 이전된 공식 센터 페이지입니다.</h2>
+        <Link href="/" style={{ color: '#1e40af', fontWeight: 'bold', textDecoration: 'underline' }}>
           🏠 와와학습코칭센터 메인으로 가기
         </Link>
       </div>
     );
   }
 
+  // 💰 제주 수강료 차등 분기 로직
   const isJeju = branch.주소 && branch.주소.includes('제주');
   const priceTable = isJeju 
     ? { elementary: '60,000원', middle: '65,000원', high: '75,000원', desc: '제주 거점 프리미엄 교육비 요율 적용' }
@@ -64,13 +68,13 @@ export default async function BranchDetail(props) {
           <div style={{ backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
             <strong style={{ color: '#1e40af', fontSize: '14.5px', display: 'block', marginBottom: '4px' }}>1. 무조건 일대일 밀착 개별 지도 및 과외식 수업</strong>
             <span style={{ fontSize: '13px', color: '#475569', lineHeight: '1.5', display: 'block' }}>
-              진도만 나가는 판서식 대형 학원과 다릅니다. 우리 아이의 현재 성취도와 이해 속도에 맞춰 질문과 피드백이 실시간으로 오가는 완벽 맞춤형 둥지식 과외 학원입니다.
+              우리 아이의 현재 성취도와 이해 속도에 맞춰 질문과 피드백이 실시간으로 오가는 완벽 맞춤형 둥지식 과외 학원입니다.
             </span>
           </div>
           <div style={{ backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
             <strong style={{ color: '#ea580c', fontSize: '14.5px', display: 'block', marginBottom: '4px' }}>2. {branch.지점명} 인근 학교 완벽 분석 밀착 기출관리</strong>
             <span style={{ fontSize: '13px', color: '#475569', lineHeight: '1.5', display: 'block' }}>
-              인근 <strong>{branch.타깃학교 || '학교별'}</strong>의 최근 중간·기말고사 출제 경향, 수행평가 유형을 철저하게 해부하여 학교별 맞춤 기출 마킹 레이아웃을 제공합니다.
+              인근 <strong>{branch.타깃학교 || '학교별'}</strong>의 최근 중간·기말고사 출제 경향을 철저하게 해부하여 학교별 맞춤 피드백 레이아웃을 제공합니다.
             </span>
           </div>
         </div>
@@ -109,7 +113,7 @@ export default async function BranchDetail(props) {
         <p style={{ margin: '0 0 16px 0', fontSize: '12.5px', color: '#64748b', lineHeight: '1.4' }}>
           공식 접수처를 통해 즉시 상담 예약을 매칭해 드립니다.
         </p>
-        <a href="https://forms.gle/4XvN7W88p6qZtY8u5" target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', padding: '16px', backgroundColor: '#ea580c', color: '#ffffff', textDecoration: 'none', borderRadius: '6px', fontSize: '15px', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(234,88,12,0.15)', boxSizing: 'border-box' }}>
+        <a href="https://forms.gle/4XvN7W88p6qZtY8u5" target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', padding: '16px', backgroundColor: '#ea580c', color: '#ffffff', textDecoration: 'none', borderRadius: '6px', fontSize: '15px', fontWeight: 'bold', boxSizing: 'border-box' }}>
           와와 {branch.지점명} 1:1 상담 예약하기 (공식 안심 폼) ➔
         </a>
       </div>
