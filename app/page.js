@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-// 🎯 [정밀 타격] 상훈님의 실제 폴더 구조(src/data/)에 맞게 경로를 수정했습니다!
+// 🎯 데이터 파일 위치 매칭
 import keywordsData from '../src/data/keywords.json'; 
 
 export default function Home() {
@@ -12,13 +12,12 @@ export default function Home() {
   // 1. 대형 지역 구분을 위한 분류 로직
   const regions = ['전체', '서울', '경기', '인천', '대전', '충청', '부산', '대구', '경상', '광주', '전라', '강원', '제주'];
 
-  // 2. 검색 및 지역 탭 필터링 마스터 시스템
+  // 2. 검색 및 지역 탭 필터링 마스터 시스템 (순수 JS 문법으로 복원하여 에러 제거)
   const filteredBranches = keywordsData.filter((item) => {
-    // 💥 데이터 구조 안정성 확보: item.지역이나 item.지점명이 없을 때를 대비한 방어 코드 추가
     const regionName = item.지역 || '';
     const branchName = item.지점명 || '';
     
-    // 검색어 매칭 (지역명 또는 지점명 둘 다 검색 가능하도록 개선)
+    // 검색어 매칭
     const matchesSearch = regionName.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           branchName.toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -112,25 +111,30 @@ export default function Home() {
 
         {filteredBranches.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {filteredBranches.map((item, idx) => (
-              <Link 
-                key={idx} 
-                href={`/${encodeURIComponent(item.slug || '')}`}
-                style={{ textDecoration: 'none', display: 'block' }}
-              >
-                <div style={{ padding: '16px', border: '1px solid #e2e8f0', borderRadius: '10px', backgroundColor: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 2px 5px rgba(0,0,0,0.02)' }}>
-                  <div>
-                    <h3 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: 'bold', color: '#0f172a' }}>
-                      {item.시도 || ''} 와와학습코칭센터 {item.지점명 || ''}
-                    </h3>
-                    <p style={{ margin: '0', fontSize: '12px', color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '400px' }}>
-                      📍 {item.주소 || '공식 등록 지점'}
-                    </p>
+            {filteredBranches.map((item, idx) => {
+              // 🚨 순수 JS 문법으로 변환하여 문법 에러를 완벽 차단
+              const targetSlug = item.slug ? String(item.slug) : '';
+
+              return (
+                <Link 
+                  key={idx} 
+                  href={`/${encodeURIComponent(targetSlug)}`}
+                  style={{ textDecoration: 'none', display: 'block' }}
+                >
+                  <div style={{ padding: '16px', border: '1px solid #e2e8f0', borderRadius: '10px', backgroundColor: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 2px 5px rgba(0,0,0,0.02)' }}>
+                    <div>
+                      <h3 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: 'bold', color: '#0f172a' }}>
+                        {item.시도 || ''} 와와학습코칭센터 {item.지점명 || ''}
+                      </h3>
+                      <p style={{ margin: '0', fontSize: '12px', color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '400px' }}>
+                        📍 {item.주소 || '공식 등록 지점'}
+                      </p>
+                    </div>
+                    <span style={{ color: '#1e40af', fontSize: '14px', fontWeight: 'bold' }}>➔</span>
                   </div>
-                  <span style={{ color: '#1e40af', fontSize: '14px', fontWeight: 'bold' }}>➔</span>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         ) : (
           <div style={{ textAlign: 'center', padding: '40px 0', border: '1px dashed #cbd5e1', borderRadius: '10px', backgroundColor: '#f8fafc' }}>
