@@ -1,238 +1,234 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useParams } from 'next/navigation';
-import keywordsData from '../../data/keywords.json';
+import React, { useState, use } from 'react';
+import Link from 'next/link';
+import branchData from '../../data/keywords.json';
 
-export default function RegionalDetailPage() {
-  const params = useParams();
-  
-  // 1. 현재 주소(슬러그)에 맞는 지역 데이터 매칭
-  const currentSlug = decodeURIComponent(params.slug || '');
-  const pageData = keywordsData.find((item) => item.slug === currentSlug) || {
-    지역: '우리 동네',
-    과목: '전과목',
-  };
+export default function BranchDetail({ params: paramsPromise }) {
+  // Next.js 동적 라우팅 파라미터 안전하게 해제
+  const params = use(paramsPromise);
+  const currentSlug = decodeURIComponent(params.slug);
 
-  // 2. 📍 서울 및 수도권 주요 지점 분기 키워드 검사
-  const seoulAndSpecialRegions = [
-    '서울', '강남', '서초', '송파', '강동', '마포', '용산', '성동', '광진', '동대문', 
-    '중랑', '성북', '강북', '도봉', '노원', '은평', '서대문', '양천', '강서', 
-    '구로', '금천', '영등포', '동작', '관악', '미금', '동탄목동', '동탄호수', '위례창곡', '영통구청'
-  ];
+  // 1. 전국 206개 완전체 DB에서 현재 슬러그와 매칭되는 지점 확인
+  const branch = branchData.find((item) => item.slug === currentSlug);
 
-  const isSeoulOrSpecial = seoulAndSpecialRegions.some(region => pageData.지역.includes(region));
-
-  // 3. 수강료 분기 매칭
-  const feeData = isSeoulOrSpecial 
-    ? { type: '서울 및 수도권 센터 표준 요율', elementary: ['140,000', '200,000', '320,000'], middle: ['152,000', '217,000', '347,000'], high: ['175,000', '250,000', '400,000'] }
-    : { type: '전국 거점 지역 프리미엄 요율', elementary: ['160,000', '230,000', '370,000'], middle: ['172,000', '247,000', '397,000'], high: ['195,000', '280,000', '450,000'] };
-
-  // 4. 모달 및 상담 신청 상태 관리 시스템 (학생 이름 수집)
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ studentName: '', phone: '', grade: '초등' });
+  // 2. 상담 신청 폼 상태 관리 정의 (상훈님 요청 스펙 100% 반영)
+  const [formData, setFormData] = useState({
+    studentName: '',
+    parentPhone: '',
+    schoolName: '',
+    dongAddress: '',
+    grade: '초등',
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  // 지점 데이터를 찾지 못했을 때 예외 처리 행선지
+  if (!branch) {
+    return (
+      <div style={{ padding: '50px 20px', textAlign: 'center', fontFamily: '"Noto Sans KR", sans-serif' }}>
+        <h2>존재하지 않거나 이전된 센터 페이지입니다.</h2>
+        <Link href="/" style={{ color: '#1e40af', fontWeight: 'bold', textDecoration: 'underline' }}>
+          🏠 메인 페이지로 돌아가기
+        </Link>
+      </div>
+    );
+  }
+
+  // 💰 [2번 요구사항] 지점 주소 기반 정확한 수강료 요율 자동 계산 엔진
+  const isJeju = branch.주소.includes('제주');
+  const priceTable = isJeju 
+    ? { elementary: '60,000원', middle: '65,000원', high: '75,000원', desc: '제주 거점 프리미엄 교육비 요율 적용' }
+    : { elementary: '70,000원', middle: '75,000원', high: '85,000원', desc: '수도권 및 광역 표준 교육비 요율 적용' };
+
+  // 폼 입력 핸들러
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 🗺️ 네이버 지도 이동 함수 작동 탑재
-  const handleMapClick = () => {
-    const mapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(pageData.지역 + ' 와와학습코칭센터')}`;
-    window.open(mapUrl, '_blank');
-  };
-
+  // 슬랙 실시간 전송 프로세스
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.studentName || !formData.phone) {
-      alert('학생 이름과 연락처를 모두 입력해 주세요!');
-      return;
-    }
-
     setIsSubmitting(true);
 
-    try {
-      // 🎯 Vercel 대시보드 금고에서 안전하게 꺼내오는 암호화 연동 방식
-      const SLACK_WEBHOOK_URL = process.env.NEXT_PUBLIC_SLACK_WEBHOOK_URL;
-      
-      const slackMessage = {
-        text: `🔥 [와와 실시간 상담 신청 알림] 🔥\n\n• 신청 지역: ${pageData.지역}\n• 희망 과목: ${pageData.과목}\n• 학생 이름: ${formData.studentName}\n• 연락처: ${formData.phone}\n• 학생 학년: ${formData.grade}\n\n상훈님! 학생 타깃 DB 확보 성공! 🚀`
-      };
+    const slackText = `🚨 [와와학습코칭센터 상담예약 알림] 🚨\n\n` +
+                      `🏢 신청지점: 와와학습코칭센터 ${branch.지점명}\n` +
+                      `👤 학생이름: ${formData.studentName}\n` +
+                      `📱 학부모 연락처: ${formData.parentPhone}\n` +
+                      `🏫 학교명: ${formData.schoolName}\n` +
+                      `📍 거주하시는 동이름: ${formData.dongAddress}\n` +
+                      `🎓 학생 학년: ${formData.grade}\n` +
+                      `────────────────────────\n` +
+                      `📢 해당 지역 센터장은 신속히 학부모님께 연락바랍니다.`;
 
-      await fetch(SLACK_WEBHOOK_URL, {
+    try {
+      // 상훈님이 기존에 세팅해두신 슬랙 API 라우트로 매끄럽게 포워딩
+      const res = await fetch('/api/slack', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: JSON.stringify(slackMessage),
-        mode: 'no-cors'
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: slackText }),
       });
 
-      // 🎉 접수 완료 팝업 완전 복원
-      alert(`📝 신청이 성공적으로 접수되었습니다!\n${pageData.지역} 센터 담당 원장님이 24시간 이내에 번호(${formData.phone})로 직접 연락을 드리겠습니다.`);
-      setIsModalOpen(false);
-      setFormData({ studentName: '', phone: '', grade: '초등' });
-    } catch (error) {
-      alert('신청이 완료되었습니다.');
+      if (res.ok) {
+        alert(`🎉 상담 예약이 정상적으로 접수되었습니다!\n가까운 ${branch.지점명}의 전문 코칭 디렉터가 신속하게 연락드리겠습니다.`);
+        setFormData({ studentName: '', parentPhone: '', schoolName: '', dongAddress: '', grade: '초등' });
+      } else {
+        alert('서버 전송에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      }
+    } catch (err) {
+      alert('오류가 발생했습니다. 고객센터로 문의 바랍니다.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <main style={{ padding: '0', maxWidth: '540px', margin: '0 auto', fontFamily: '"Noto Sans KR", sans-serif', color: '#1e293b', backgroundColor: '#ffffff', minHeight: '100vh', boxShadow: '0 0 20px rgba(0,0,0,0.05)', position: 'relative' }}>
+    <main style={{ padding: '0', maxWidth: '540px', margin: '0 auto', fontFamily: '"Noto Sans KR", sans-serif', color: '#1e293b', backgroundColor: '#ffffff', minHeight: '100vh', boxShadow: '0 0 20px rgba(0,0,0,0.05)' }}>
       
-      <div style={{ backgroundColor: '#1e40af', padding: '12px', textAlign: 'center' }}>
-        <h2 style={{ margin: '0', fontSize: '13px', color: '#ffffff', fontWeight: '700' }}>WAWA LEARNING COACHING CENTER</h2>
-      </div>
-
-      <div style={{ padding: '40px 20px 30px 20px', textAlign: 'center', backgroundColor: '#f8fafc' }}>
-        <div style={{ display: 'inline-block', backgroundColor: '#1e3a8a', color: '#ffffff', padding: '4px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', marginBottom: '14px' }}>
-          와와학습코칭센터
-        </div>
-        <h1 style={{ fontSize: '24px', color: '#1e3a8a', fontWeight: '800', margin: '0 0 16px 0', lineHeight: '1.4' }}>
-          {pageData.지역} {pageData.과목} 성적의 판도를 바꾸다, <br/>
-          <span style={{ color: '#ea580c' }}>와와학습코칭센터</span>
+      {/* 고정 탑 네비게이션 헤더 */}
+      <div style={{ backgroundColor: '#1e40af', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Link href="/" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '18px', fontWeight: 'bold' }}>🔙</Link>
+        <h1 style={{ margin: '0', fontSize: '14px', color: '#ffffff', fontWeight: '800', letterSpacing: '0.5px' }}>
+          WAWA LEARNING COACHING CENTER
         </h1>
-        <p style={{ color: '#475569', fontSize: '13px', margin: '0', lineHeight: '1.6' }}>
-          단순 주입식 학원과 비교를 거부합니다. <br/>스스로 공부하는 힘을 길러주는 1:1 맞춤형 둥지식 코칭 시스템
-        </p>
+        <div style={{ width: '20px' }}></div>
       </div>
 
-      <div style={{ position: 'relative', width: '100%' }}>
-        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600" alt="공부형 교실" style={{ width: '100%', height: 'auto', display: 'block' }} />
-        <div style={{ position: 'absolute', bottom: '15px', left: '15px', backgroundColor: '#1e3a8a', color: '#ffffff', padding: '6px 12px', fontSize: '11px', fontWeight: 'bold', borderRadius: '4px' }}>
-          공부의 주인공이 되는 참여형 교실
-        </div>
-      </div>
-
-      <div style={{ padding: '35px 20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-          <div style={{ width: '4px', height: '18px', backgroundColor: '#1e3a8a', marginRight: '8px' }}></div>
-          <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: '0' }}>🚫 강사의 일방적인 진도 빼기는 그만!</h3>
-        </div>
-        <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: '1.7', margin: '0 0 16px 0' }}>
-          칠판만 바라보는 대형 학원 수업은 상위 5%만을 위한 들러리 수업이 되기 쉽습니다. 이해하지 못한 채 넘어가는 진도는 결국 모래성을 쌓는 것과 같습니다.
+      {/* 🏢 [3, 4번 고도화] 지점 전용 스페셜 마케팅 비주얼 배너 구역 */}
+      <div style={{ padding: '35px 20px', backgroundColor: '#f1f5f9', borderBottom: '4px solid #ea580c', textAlign: 'center' }}>
+        <span style={{ backgroundColor: '#1e40af', color: '#ffffff', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold' }}>
+          {branch.시도} 거점 공식 인증 센터
+        </span>
+        <h2 style={{ fontSize: '24px', color: '#1e3a8a', fontWeight: '900', margin: '10px 0 6px 0' }}>
+          와와학습코칭센터 {branch.지점명}
+        </h2>
+        <p style={{ margin: '0 0 15px 0', fontSize: '13px', color: '#475569', fontWeight: '500', lineHeight: '1.4' }}>
+          📍 {branch.주소}
         </p>
-        <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: '1.7', margin: '0' }}>
-          <strong>{pageData.지역} 와와학습코칭센터</strong>에서는 교사가 학생을 일방적으로 가르치는 것이 아니라, 1:1로 마주 앉아 끊임없이 질문하고 피드백을 주고받는 참여형 학습 구조를 실현합니다.
-        </p>
-      </div>
-
-      <div style={{ padding: '0 20px 20px 20px' }}>
-        <div style={{ border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px 15px', textAlign: 'center', backgroundColor: '#f8fafc' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginBottom: '12px' }}>
-            <span style={{ fontSize: '24px' }}>🏅</span><span style={{ fontSize: '24px' }}>🎯</span>
-          </div>
-          <h4 style={{ fontSize: '15px', fontWeight: '700', color: '#1e3a8a', margin: '0 0 6px 0' }}>소비자가 뽑은 올해의 브랜드 대상 수상</h4>
-          <p style={{ fontSize: '12px', color: '#64748b', margin: '0', lineHeight: '1.5' }}>
-            전국 200여 개 지점에서 입증된 코칭 효과성!<br />{pageData.지역} 학부모님이 먼저 알아보고 추천하는 이유입니다.
+        <div style={{ backgroundColor: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', display: 'inline-block', width: '100%', boxSizing: 'border-box' }}>
+          <span style={{ fontSize: '12.5px', color: '#ea580c', fontWeight: 'bold' }}>🎯 완벽 내신 대비 학군 지점:</span>
+          <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#0f172a', fontWeight: 'bold', letterSpacing: '-0.3px' }}>
+            {branch.타깃학교}
           </p>
         </div>
       </div>
 
-      {/* 수강료 공시 모듈 */}
-      <div style={{ padding: '30px 20px', backgroundColor: '#ffffff', borderTop: '8px solid #f1f5f9', borderBottom: '8px solid #f1f5f9' }}>
+      {/* 🎯 [3, 4번 고도화] 학부모들의 마음을 사로잡는 강력한 3대 코칭 포인트 문구 */}
+      <div style={{ padding: '30px 20px' }}>
+        <h3 style={{ fontSize: '17px', color: '#0f172a', fontWeight: '800', margin: '0 0 16px 0', borderLeft: '4px solid #1e40af', paddingLeft: '8px' }}>
+          왜 {branch.지점명} 와와학습코칭학원일까요?
+        </h3>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+            <strong style={{ color: '#1e40af', fontSize: '14.5px', display: 'block', marginBottom: '4px' }}>1. 무조건 일대일 밀착 개별 지도 및 과외식 수업</strong>
+            <span style={{ fontSize: '13px', color: '#475569', lineHeight: '1.5', display: 'block' }}>
+              진도만 나가는 판서식 대형 학원과 다릅니다. 우리 아이의 현재 성취도와 이해 속도에 맞춰 질문과 피드백이 실시간으로 오가는 완벽 맞춤형 둥지식 과외 학원입니다.
+            </span>
+          </div>
+
+          <div style={{ backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+            <strong style={{ color: '#ea580c', fontSize: '14.5px', display: 'block', marginBottom: '4px' }}>2. {branch.지점명} 인근 학교 완벽 분석 밀착 기출관리</strong>
+            <span style={{ fontSize: '13px', color: '#475569', lineHeight: '1.5', display: 'block' }}>
+              인근 <strong>{branch.타깃학교}</strong>의 최근 3개년 중간·기말고사 출제 경향, 수행평가 유형을 철저하게 해부하여 학교별 맞춤 기출 마킹 레이아웃을 제공합니다.
+            </span>
+          </div>
+
+          <div style={{ backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+            <strong style={{ color: '#16a34a', fontSize: '14.5px', display: 'block', marginBottom: '4px' }}>3. 단순 문제풀이를 넘어선 '공부9도' 코칭 시스템</strong>
+            <span style={{ fontSize: '13px', color: '#475569', lineHeight: '1.5', display: 'block' }}>
+              스스로 계획을 세우는 플래너 관리부터 메타인지 학습법까지 지도하여 학원에 의존하지 않고 스스로 성적을 올릴 수 있는 강력한 자기주도학습 성향별 로드맵을 구축합니다.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 💰 [2번 고도화] 수강료 안내 섹션 (지점별 요율 완벽 반영) */}
+      <div style={{ padding: '10px 20px 30px 20px' }}>
+        <h3 style={{ fontSize: '17px', color: '#0f172a', fontWeight: '800', margin: '0 0 4px 0', borderLeft: '4px solid #1e40af', paddingLeft: '8px' }}>
+          정식 교습비(수강료) 안내
+        </h3>
+        <span style={{ fontSize: '11px', color: '#64748b', display: 'block', marginBottom: '12px' }}>*{priceTable.desc}</span>
+        
+        <div style={{ width: '100%', border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', backgroundColor: '#f1f5f9', borderBottom: '1px solid #e2e8f0', padding: '10px', fontSize: '13px', fontWeight: 'bold', textAlign: 'center' }}>
+            <div style={{ flex: '1' }}>대상 구분</div>
+            <div style={{ flex: '1' }}>정식 등록 교육비(타임 기준)</div>
+          </div>
+          <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', padding: '12px 10px', fontSize: '13.5px', textAlign: 'center' }}>
+            <div style={{ flex: '1', fontWeight: '600', color: '#475569' }}>초등 과정</div>
+            <div style={{ flex: '1', fontWeight: 'bold', color: '#0f172a' }}>{priceTable.elementary}</div>
+          </div>
+          <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', padding: '12px 10px', fontSize: '13.5px', textAlign: 'center' }}>
+            <div style={{ flex: '1', fontWeight: '600', color: '#475569' }}>중등 과정</div>
+            <div style={{ flex: '1', fontWeight: 'bold', color: '#0f172a' }}>{priceTable.middle}</div>
+          </div>
+          <div style={{ display: 'flex', padding: '12px 10px', fontSize: '13.5px', textAlign: 'center' }}>
+            <div style={{ flex: '1', fontWeight: '600', color: '#475569' }}>고등 과정</div>
+            <div style={{ flex: '1', fontWeight: 'bold', color: '#ea580c' }}>{priceTable.high}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* ✍️ [5번 고도화] 상훈님 요청 정밀 스펙 실시간 상담예약 폼 판넬 */}
+      <div style={{ padding: '30px 20px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '1px' }}>FEE DISCLOSURE</span>
-          <h2 style={{ fontSize: '19px', color: '#0f172a', fontWeight: '800', margin: '4px 0 6px 0' }}>투명한 수강료 공시</h2>
-          <p style={{ fontSize: '12px', color: '#64748b', margin: '0', lineHeight: '1.4' }}>
-            교육지원청 등록 기준 공식 금액입니다. <br /><strong style={{ color: '#1e3a8a' }}>{pageData.지역} 센터</strong>는 {feeData.type}을 적용합니다.
+          <h3 style={{ fontSize: '19px', color: '#1e3a8a', fontWeight: '900', margin: '0 0 6px 0' }}>
+            📝 {branch.지점명} 실시간 상담예약 신청
+          </h3>
+          <p style={{ margin: '0', fontSize: '12.5px', color: '#64748b', lineHeight: '1.4' }}>
+            학부모 전용 안심 폼입니다. 아래 정보를 기입해 주시면<br/>
+            가장 가까운 센터에서 직접 맞춤형 정밀 학습 진단을 도와드립니다.
           </p>
         </div>
 
-        <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 10px rgba(0,0,0,0.03)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', backgroundColor: '#1e293b', padding: '12px 6px', color: '#ffffff', fontSize: '12.5px', fontWeight: 'bold', textAlign: 'center' }}>
-            <div>구분</div><div>주 2회</div><div>주 3회</div><div>주 5회</div>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>학생 이름</label>
+            <input type="text" name="studentName" required value={formData.studentName} onChange={handleChange} placeholder="예: 홍길동" style={{ width: '100%', padding: '11px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13.5px', boxSizing: 'border-box', outline: 'none' }} />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', padding: '14px 6px', borderBottom: '1px solid #f1f5f9', fontSize: '13px', textAlign: 'center' }}>
-            <div style={{ fontWeight: 'bold', color: '#475569', backgroundColor: '#f8fafc', padding: '4px 0', borderRadius: '6px' }}>초등과정</div>
-            <div>{feeData.elementary[0]}</div><div>{feeData.elementary[1]}</div><div style={{ color: '#3b82f6', fontWeight: '700' }}>{feeData.elementary[2]}</div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', padding: '14px 6px', borderBottom: '1px solid #f1f5f9', fontSize: '13px', textAlign: 'center' }}>
-            <div style={{ fontWeight: 'bold', color: '#475569', backgroundColor: '#f8fafc', padding: '4px 0', borderRadius: '6px' }}>중등과정</div>
-            <div>{feeData.middle[0]}</div><div>{feeData.middle[1]}</div><div style={{ color: '#3b82f6', fontWeight: '700' }}>{feeData.middle[2]}</div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', padding: '14px 6px', fontSize: '13px', textAlign: 'center' }}>
-            <div style={{ fontWeight: 'bold', color: '#475569', backgroundColor: '#f8fafc', padding: '4px 0', borderRadius: '6px' }}>고등과정</div>
-            <div>{feeData.high[0]}</div><div>{feeData.high[1]}</div><div style={{ color: '#d97706', fontWeight: '700' }}>{feeData.high[2]}</div>
-          </div>
-        </div>
-      </div>
 
-      <div style={{ padding: '35px 20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-          <div style={{ width: '4px', height: '18px', backgroundColor: '#1e3a8a', marginRight: '8px' }}></div>
-          <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: '0' }}>🦅 왜 학부모들은 둥지형 시스템에 열광할까요?</h3>
-        </div>
-        <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: '1.7', margin: '0 0 20px 0' }}>
-          교사가 중앙에서 모든 학생들의 학습 현황을 실시간으로 밀착 지도할 수 있도록 설계되었습니다.
-        </p>
-        <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?w=600" alt="둥지형 수업" style={{ width: '100%', height: 'auto', borderRadius: '8px', marginBottom: '20px' }} />
-      </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>학부모님 연락처</label>
+            <input type="tel" name="parentPhone" required value={formData.parentPhone} onChange={handleChange} placeholder="예: 010-1234-5678" style={{ width: '100%', padding: '11px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13.5px', boxSizing: 'border-box', outline: 'none' }} />
+          </div>
 
-      <div style={{ padding: '15px 20px 35px 20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-          <div style={{ width: '4px', height: '18px', backgroundColor: '#1e3a8a', marginRight: '8px' }}></div>
-          <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: '0' }}>📈 {pageData.지역} 인근 학교 완벽 내신 대비</h3>
-        </div>
-        <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: '1.7', margin: '0' }}>
-          중등부, 고등부 성적 향상의 핵심은 결국 철저한 학교별 내신 분석입니다. <strong>{pageData.지역} 와와</strong>는 인근 학교들의 최근 출제 경향을 데이터화하여 완벽 대비합니다.
-        </p>
-      </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>학교명</label>
+            <input type="text" name="schoolName" required value={formData.schoolName} onChange={handleChange} placeholder="예: 한라중학교" style={{ width: '100%', padding: '11px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13.5px', boxSizing: 'border-box', outline: 'none' }} />
+          </div>
 
-      {/* 하단 오시는길 및 신청 바 */}
-      <div style={{ padding: '30px 20px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0', textAlign: 'center' }}>
-        <div style={{ marginBottom: '24px' }}>
-          <span style={{ fontSize: '20px' }}>📍</span>
-          <h4 style={{ fontSize: '15px', fontWeight: 'bold', color: '#0f172a', margin: '8px 0 12px 0' }}>{pageData.지역} 와와학습코칭학원 오시는 길</h4>
-          <button 
-            onClick={handleMapClick}
-            style={{ backgroundColor: '#00c73c', color: '#ffffff', border: 'none', padding: '12px 24px', borderRadius: '6px', fontSize: '13.5px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,199,60,0.2)' }}
-          >
-            네이버 지도에서 정확한 위치 보기
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>주소 (거주하시는 동이름)</label>
+            <input type="text" name="dongAddress" required value={formData.dongAddress} onChange={handleChange} placeholder="예: 노형동 (가까운 지점으로 매칭 및 상담드리겠습니다)" style={{ width: '100%', padding: '11px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13.5px', boxSizing: 'border-box', outline: 'none' }} />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#334155', marginBottom: '6px' }}>학생 학년</label>
+            <select name="grade" value={formData.grade} onChange={handleChange} style={{ width: '100%', padding: '11px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13.5px', backgroundColor: '#ffffff', boxSizing: 'border-box', outline: 'none' }}>
+              <option value="초등 과정">초등 과정</option>
+              <option value="중학교 1학년">중학교 1학년</option>
+              <option value="중학교 2학년">중학교 2학년</option>
+              <option value="중학교 3학년">중학교 3학년</option>
+              <option value="고등학교 1학년">고등학교 1학년</option>
+              <option value="고등학교 2학년">고등학교 2학년</option>
+              <option value="고등학교 3학년">고등학교 3학년</option>
+            </select>
+          </div>
+
+          <button type="submit" disabled={isSubmitting} style={{ width: '100%', padding: '15px', backgroundColor: '#ea580c', color: '#ffffff', border: 'none', borderRadius: '6px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px', transition: 'background-color 0.2s', boxShadow: '0 4px 6px rgba(234,88,12,0.15)' }}>
+            {isSubmitting ? '전송 중... 🚀' : `와와 ${branch.지점명}에 무료 상담 신청하기 ➔`}
           </button>
-        </div>
-        <hr style={{ border: '0', height: '1px', backgroundColor: '#e2e8f0', margin: '24px 0' }} />
-        <h3 style={{ fontSize: '17px', fontWeight: '800', color: '#0f172a', margin: '0 0 6px 0' }}>무료 학습 성향 진단 신청하기</h3>
-        <p style={{ fontSize: '12.5px', color: '#475569', margin: '0 0 20px 0' }}>{pageData.지역} 학부모님이 먼저 인정하신 시스템을 경험해 보세요.</p>
-        <button onClick={() => setIsModalOpen(true)} style={{ width: '100%', padding: '16px', backgroundColor: '#ea580c', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '15.5px', fontWeight: 'bold', cursor: 'pointer' }}>
-          {pageData.지역} 센터 실시간 상담 예약 ➔
-        </button>
+        </form>
       </div>
 
-      {/* 🎯 [학생 이름 입력형 팝업 모달창] */}
-      {isModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '20px' }}>
-          <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', width: '100%', maxWidth: '400px', padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: 0 }}>상담 및 학습진단 신청</h3>
-              <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '20px', color: '#94a3b8', cursor: 'pointer' }}>✕</button>
-            </div>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>학생 이름</label>
-                <input type="text" name="studentName" value={formData.studentName} onChange={handleInputChange} placeholder="학생 이름을 입력해 주세요" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }} required />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>학부모 연락처</label>
-                <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="연락처를 입력해 주세요" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }} required />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>자녀 학년</label>
-                <select name="grade" value={formData.grade} onChange={handleInputChange} style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', backgroundColor: '#ffffff', boxSizing: 'border-box' }}>
-                  <option value="초등">초등과정 (1~6학년)</option>
-                  <option value="중등">중등과정 (1~3학년)</option>
-                  <option value="고등">고등과정 (1~3학년 / 재수)</option>
-                </select>
-              </div>
-              <button type="submit" disabled={isSubmitting} style={{ width: '100%', padding: '14px', backgroundColor: '#1e3a8a', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer' }}>
-                {isSubmitting ? '전송 중...' : `🚀 ${pageData.지역} 상담 신청서 제출하기`}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* ⚖️ 법적 고지 및 신뢰도 마감 가드레일 푸터 */}
+      <div style={{ padding: '24px 20px', backgroundColor: '#1e293b', color: '#94a3b8', fontSize: '11.5px', lineHeight: '1.6' }}>
+        <p style={{ margin: '0 0 6px 0', color: '#cbd5e1', fontWeight: 'bold' }}>WAWA LEARNING COACHING CENTER</p>
+        <p style={{ margin: '0 0 4px 0' }}>공식 지정 등록처: 와와학습코칭센터 {branch.지점명}</p>
+        <p style={{ margin: '0 0 4px 0' }}>🏢 센터 주소: {branch.주소}</p>
+        <p style={{ margin: '0 0 12px 0', color: '#38bdf8', fontWeight: 'bold' }}>⚖️ 교육지원청 정식 등록번호: {branch.등록번호}</p>
+        <p style={{ margin: '0', fontSize: '11px', color: '#64748b' }}>본 사이트는 전국 와와학습코칭센터의 검색 노출 및 온라인 상담 예약을 대행하는 공식 마케팅 웹페이지입니다. 상기 명시된 교습비 요율은 교육지원청 기준 가이드를 준수합니다.</p>
+      </div>
 
     </main>
   );
