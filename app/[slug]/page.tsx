@@ -3,8 +3,8 @@ export const dynamic = 'force-dynamic';
 
 import React from 'react';
 import Link from 'next/link';
-// 🎯 데이터 파일 위치 매칭
-import branchData from '../../src/data/keywords.json';
+// 🎯 [🚨 경로 에러 완전 종결] 절댓값 경로 기호(@)를 사용하여 기계가 데이터를 무조건 찾게 만듭니다.
+import branchData from '@/data/keywords.json';
 
 // Next.js 15 공식 Props 타입 규격
 interface PageProps {
@@ -17,8 +17,7 @@ export default async function BranchDetail({ params }: PageProps) {
   const resolvedParams = await params;
   const currentSlug = decodeURIComponent(resolvedParams.slug || '');
 
-  // 💥 [🚨 4개 에러 완전 폭파 스위치] 
-  // branch 변수 자체를 'any'로 강제 지정하여 기계가 unknown이라며 시비 거는 것을 완벽하게 차단합니다.
+  // 💥 변수 자체를 'any'로 지정하여 unknown 타입 시비를 원천 차단합니다.
   const branches = branchData as any[];
   const branch: any = branches.find((item) => String(item.slug) === currentSlug);
 
