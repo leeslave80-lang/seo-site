@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "next.config.mjs", "app/[slug]/page.tsx"  ],
+, "next.config.mjs", "app/[slug]/page.js"  ],
   "exclude": ["node_modules"]
 }

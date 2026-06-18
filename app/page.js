@@ -2,40 +2,54 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-// 🎯 [🚨 상훈님 지적 완벽 반영 정답 경로] app 폴더를 나가서 data 폴더로 직행합니다.
+// 🎯 상훈님의 진짜 정답 데이터 연동 완료
 import keywordsData from '../data/keywords.json'; 
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('전체');
 
+  // 상훈님의 진짜 데이터 주소 필터를 위해 지역 목록 구성
   const regions = ['전체', '서울', '경기', '인천', '대전', '충청', '부산', '대구', '경상', '광주', '전라', '강원', '제주'];
 
   const filteredBranches = keywordsData.filter((item) => {
-    const regionName = item.지역 || '';
-    const branchName = item.지점명 || '';
+    // 엑셀 원본 컬럼명 '센터명' 또는 '지점명' 안전하게 가져오기
+    const branchName = item.센터명 || item.지점명 || '';
+    // 엑셀 원본 컬럼명 '센터 주소' 가져오기 (시도 분류를 위해 사용)
+    const fullAddress = item["센터 주소"] || '';
     
-    const matchesSearch = regionName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    // 1. 검색어 필터링 (지점명이나 주소에 검색어가 포함되는지 확인)
+    const matchesSearch = fullAddress.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           branchName.toLowerCase().includes(searchTerm.toLowerCase());
     
+    // 2. 지역 버튼 필터링
     if (selectedRegion === '전체') return matchesSearch;
     
-    if (selectedRegion === '충청') return matchesSearch && (regionName.includes('충남') || regionName.includes('충북') || regionName.includes('세종'));
-    if (selectedRegion === '경상') return matchesSearch && (regionName.includes('경남') || regionName.includes('경북'));
-    if (selectedRegion === '전라') return matchesSearch && (regionName.includes('전남') || regionName.includes('전북'));
+    if (selectedRegion === '충청') {
+      return matchesSearch && (fullAddress.includes('충남') || fullAddress.includes('충북') || fullAddress.includes('세종') || fullAddress.includes('충청'));
+    }
+    if (selectedRegion === '경상') {
+      return matchesSearch && (fullAddress.includes('경남') || fullAddress.includes('경북') || fullAddress.includes('경상'));
+    }
+    if (selectedRegion === '전라') {
+      return matchesSearch && (fullAddress.includes('전남') || fullAddress.includes('전북') || fullAddress.includes('전라'));
+    }
     
-    return matchesSearch && regionName.includes(selectedRegion);
+    // 서울, 경기, 인천, 대전 등 주소의 앞부분 글자가 일치하는지 검사
+    return matchesSearch && fullAddress.includes(selectedRegion);
   });
 
   return (
     <main style={{ padding: '0', maxWidth: '540px', margin: '0 auto', fontFamily: '"Noto Sans KR", sans-serif', color: '#1e293b', backgroundColor: '#ffffff', minHeight: '100vh', boxShadow: '0 0 20px rgba(0,0,0,0.05)' }}>
       
+      {/* 헤더 타이틀 */}
       <div style={{ backgroundColor: '#1e40af', padding: '16px', textAlign: 'center' }}>
         <h1 style={{ margin: '0', fontSize: '15px', color: '#ffffff', fontWeight: '800', letterSpacing: '1px' }}>
           WAWA LEARNING COACHING CENTER
         </h1>
       </div>
 
+      {/* 메인 비주얼 설명 */}
       <div style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
         <div style={{ display: 'inline-block', backgroundColor: '#ea580c', color: '#ffffff', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', marginBottom: '12px' }}>
           전국 거점 공식 지점 보유
@@ -50,11 +64,12 @@ export default function Home() {
         </p>
       </div>
 
+      {/* 검색창 인풋 */}
       <div style={{ padding: '20px' }}>
         <div style={{ position: 'relative' }}>
           <input 
             type="text" 
-            placeholder="🔍 동네 이름이나 지점명을 입력하세요 (예: 지족동, 노은동, 노형)" 
+            placeholder="🔍 동네 이름이나 지점명을 입력하세요 (예: 하남풍산, 동소문)" 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: '100%', padding: '14px 16px', border: '2px solid #1e3a8a', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box', outline: 'none', boxShadow: '0 4px 12px rgba(30,58,138,0.05)' }}
@@ -62,6 +77,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* 지역 스크롤 탭 */}
       <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', padding: '0 20px 15px 20px', whiteSpace: 'nowrap', WebkitOverflowScrolling: 'touch' }}>
         {regions.map((region) => (
           <button
@@ -84,6 +100,7 @@ export default function Home() {
         ))}
       </div>
 
+      {/* 결과 리스트 영역 */}
       <div style={{ padding: '10px 20px 40px 20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
           <span style={{ fontSize: '13px', color: '#64748b' }}>
@@ -102,7 +119,8 @@ export default function Home() {
         {filteredBranches.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {filteredBranches.map((item, idx) => {
-              const targetSlug = item.slug ? String(item.slug) : '';
+              // 진짜 데이터의 '센터명' 값을 기준으로 안전하게 상세 주소(Slug) 만들기
+              const targetSlug = item.센터명 || item.지점명 || '';
 
               return (
                 <Link 
@@ -113,10 +131,10 @@ export default function Home() {
                   <div style={{ padding: '16px', border: '1px solid #e2e8f0', borderRadius: '10px', backgroundColor: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 2px 5px rgba(0,0,0,0.02)' }}>
                     <div>
                       <h3 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: 'bold', color: '#0f172a' }}>
-                        {item.시도 || ''} 와와학습코칭센터 {item.지점명 || ''}
+                        와와학습코칭센터 {targetSlug}
                       </h3>
                       <p style={{ margin: '0', fontSize: '12px', color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '400px' }}>
-                        📍 {item.주소 || '공식 등록 지점'}
+                        📍 {item["센터 주소"] || '공식 등록 지점'}
                       </p>
                     </div>
                     <span style={{ color: '#1e40af', fontSize: '14px', fontWeight: 'bold' }}>➔</span>
