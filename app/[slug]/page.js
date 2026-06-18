@@ -73,7 +73,7 @@ export default function RegionalDetailPage({ params }) {
 
     try {
       // 🎯 상훈님이 방금 주신 무조건 살아있는 진짜 100% 진품 주소 매립 완료!
-      const SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
+      const SLACK_WEBHOOK_URL = process.env.NEXT_PUBLIC_SLACK_WEBHOOK_URL;
       
       const slackMessage = {
         text: `🔥 [와와 실시간 상담 신청 알림] 🔥\n\n` +
