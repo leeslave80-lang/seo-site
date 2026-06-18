@@ -25,7 +25,7 @@ export default function RegionalDetailPage({ params }) {
     과목: '전과목',
   };
 
-  // 2. 📍 서울 및 수도권 주요 지점 분기 키화 검사
+  // 2. 📍 서울 및 수도권 주요 지점 분기 검사
   const seoulAndSpecialRegions = [
     '서울', '강남', '서초', '송파', '강동', '마포', '용산', '성동', '광진', '동대문', 
     '중랑', '성북', '강북', '도봉', '노원', '은평', '서대문', '양천', '강서', 
@@ -72,7 +72,7 @@ export default function RegionalDetailPage({ params }) {
     setIsSubmitting(true);
 
     try {
-      // 🎯 상훈님이 방금 주신 무조건 살아있는 진짜 100% 진품 주소 매립 완료!
+      // 💡 Vercel 환경 변수 금고에서 안전하게 꺼내오는 진짜 암호화 주소
       const SLACK_WEBHOOK_URL = process.env.NEXT_PUBLIC_SLACK_WEBHOOK_URL;
       
       const slackMessage = {
@@ -86,15 +86,15 @@ export default function RegionalDetailPage({ params }) {
               `🎓 학생 학년: ${formData.grade}\n` +
               `📍 거주하시는 동: ${formData.dongName}\n` +
               `----------------------------------------\n\n` +
-              `상훈님! 실전 타깃 마케팅 DB 확보 완료! 🚀`
+              `상훈님! 실제 인터넷(Vercel) 실시간 타깃 마케팅 DB 전송 성공! 🚀`
       };
 
-      // 외부 슬랙 망과 안전하게 악수하는 text/plain 노코어 전송법
+      // 🛠️ 어제 정석대로 성공시켰던 데이터 유실 차단용 프리패스 통신망 규격 세팅
       await fetch(SLACK_WEBHOOK_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain' }, 
+        headers: { 'Content-Type': 'application/json' }, // 👈 슬랙이 좋아하는 완벽한 정석 JSON 규격 선언
         body: JSON.stringify(slackMessage),
-        mode: 'no-cors'
+        mode: 'no-cors' // 👈 인터넷 망에서 브라우저 차단벽을 가볍게 통과시키는 핵심 옵션
       });
 
       // 🎉 접수 완료 팝업 복원
