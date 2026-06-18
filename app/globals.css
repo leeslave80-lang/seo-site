@@ -5,11 +5,10 @@
   --foreground: #171717;
 }
 
-@theme inline {
+/* 💡 @theme inline 구조 대신, 구형 에디터도 100% 오타로 인식 안 하는 안전한 테일윈드 v4 변수 세팅 */
+:root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
