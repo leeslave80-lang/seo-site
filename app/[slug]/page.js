@@ -63,8 +63,8 @@ export default function RegionalDetailPage({ params }) {
     setIsSubmitting(true);
 
     try {
-      // 📍 상훈님의 진짜 새 슬랙 주소 직격 매립
-      const SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
+      // 💡 상훈님이 Vercel 대시보드 금고에 넣어두신 비밀 열쇠 주소를 다이렉트로 매칭!
+      const SLACK_WEBHOOK_URL = process.env.NEXT_PUBLIC_SLACK_WEBHOOK_URL;
       
       const slackMessage = {
         text: `🔥 [와와 실시간 상담 신청 알림] 🔥\n\n` +
@@ -77,10 +77,10 @@ export default function RegionalDetailPage({ params }) {
               `🎓 학생 학년: ${formData.grade}\n` +
               `📍 거주하시는 동: ${formData.dongName}\n` +
               `----------------------------------------\n\n` +
-              `상훈님! 실제 Vercel 서버망 뚫고 진짜 실시간 DB 확보 성공! 🚀`
+              `상훈님! 인터넷 보안벽 완벽 통과하고 실제 실시간 DB 전송 성공! 🚀`
       };
 
-      // 🛠️ 데이터 탈락을 만들던 no-cors 옵션을 삭제하고 정석 통신망으로 정면 돌파
+      // 🛠️ 대시보드 금고 주소를 정석대로 호출하기 때문에 no-cors 없이 안전하게 날아갑니다.
       await fetch(SLACK_WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -123,13 +123,13 @@ export default function RegionalDetailPage({ params }) {
         </div>
       </div>
       <div style={{ padding: '30px 20px', backgroundColor: '#ffffff', borderTop: '8px solid #f1f5f9', borderBottom: '8px solid #f1f5f9' }}>
-        <div style={{ textAlignment: 'center', marginBottom: '20px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '1px' }}>FEE DISCLOSURE</span>
           <h2 style={{ fontSize: '19px', color: '#0f172a', fontWeight: '800', margin: '4px 0 6px 0' }}>투명한 수강료 공시</h2>
           <p style={{ fontSize: '12px', color: '#64748b', margin: '0', lineHeight: '1.4' }}>교육지원청 등록 기준 공식 금액입니다. <br /><strong style={{ color: '#1e3a8a' }}>{pageData.지역} 센터</strong>는 {feeData.type}을 적용합니다.</p>
         </div>
         <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 10px rgba(0,0,0,0.03)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', backgroundColor: '#1e293b', padding: '12px 6px', color: '#ffffff', fontSize: '12.5px', textAlign: 'center' }}><div>구분</div><div>주 2회</div><div>주 3회</div><div>주 5회</div></div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', backgroundColor: '#1e293b', padding: '12px 6px', color: '#ffffff', fontSize: '12.5px', fontWeight: 'bold', textAlign: 'center' }}><div>구분</div><div>주 2회</div><div>주 3회</div><div>주 5회</div></div>
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', padding: '14px 6px', borderBottom: '1px solid #f1f5f9', fontSize: '13px', textAlign: 'center' }}><div style={{ fontWeight: 'bold', color: '#475569', backgroundColor: '#f8fafc', padding: '4px 0', borderRadius: '6px' }}>초등과정</div><div>{feeData.elementary[0]}</div><div>{feeData.elementary[1]}</div><div style={{ color: '#3b82f6', fontWeight: '700' }}>{feeData.elementary[2]}</div></div>
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', padding: '14px 6px', borderBottom: '1px solid #f1f5f9', fontSize: '13px', textAlign: 'center' }}><div style={{ fontWeight: 'bold', color: '#475569', backgroundColor: '#f8fafc', padding: '4px 0', borderRadius: '6px' }}>중등과정</div><div>{feeData.middle[0]}</div><div>{feeData.middle[1]}</div><div style={{ color: '#3b82f6', fontWeight: '700' }}>{feeData.middle[2]}</div></div>
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', padding: '14px 6px', fontSize: '13px', textAlign: 'center' }}><div style={{ fontWeight: 'bold', color: '#475569', backgroundColor: '#f8fafc', padding: '4px 0', borderRadius: '6px' }}>고등과정</div><div>{feeData.high[0]}</div><div>{feeData.high[1]}</div><div style={{ color: '#d97706', fontWeight: '700' }}>{feeData.high[2]}</div></div>
