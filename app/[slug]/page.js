@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useParams } from 'next/navigation';
 import keywordsData from '../../data/keywords.json';
 
-export default function RegionalDetailPage() {
-  const params = useParams();
+export default function RegionalDetailPage({ params }) {
+  // 💡 Vercel 환경에서 useParams 버그를 완벽하게 격파하는 안전한 파라미터 언팩 방식
+  const unpackedParams = React.use(params);
+  const currentSlug = decodeURIComponent(unpackedParams.slug || '').trim();
   
   // 1. 현재 주소(슬러그)에 맞는 지역 데이터 매칭
-  const currentSlug = decodeURIComponent(params.slug || '');
   const pageData = keywordsData.find((item) => {
     const centerName = (item.센터명 || '').trim();
     const branchName = (item.지점명 || '').trim();
@@ -73,10 +73,9 @@ export default function RegionalDetailPage() {
     setIsSubmitting(true);
 
     try {
-      // 🎯 상훈님이 방금 발급받아 주신 진짜 새 주소 다이렉트 고속 매립!!
+      // 🎯 상훈님이 발급해주신 진짜 실시간 생존 새 주소
       const SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
       
-      // 상훈님이 정확하게 요청하신 5가지 항목 깔끔한 줄바꿈 조합
       const slackMessage = {
         text: `🔥 [와와 실시간 상담 신청 알림] 🔥\n\n` +
               `• 신청 지점/지역: ${pageData.지역 || currentSlug}\n` +
@@ -88,17 +87,17 @@ export default function RegionalDetailPage() {
               `🎓 학생 학년: ${formData.grade}\n` +
               `📍 거주하시는 동: ${formData.dongName}\n` +
               `----------------------------------------\n\n` +
-              `상훈님! 학생 타깃 DB 확보 성공! 🚀`
+              `상훈님! 실제 Vercel 서버에서 타깃 DB 확보 성공! 🚀`
       };
 
-      // 슬랙 기계 규격에 맞게 깔끔하게 포스트 사격
+      // Vercel 브라우저 통신망 규격 통일을 위해 fetch 옵션 고도화 체결
       await fetch(SLACK_WEBHOOK_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain' }, 
-        body: JSON.stringify(slackMessage)
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(slackMessage),
+        mode: 'cors' // 💡 외부 슬랙 망으로 안전하게 뚫고 나가는 실전 인터넷 통신 모드
       });
 
-      // 🎉 접수 완료 팝업 완전 복원
       alert(`📝 신청이 성공적으로 접수되었습니다!\n${pageData.지역 || currentSlug} 센터 담당 원장님이 24시간 이내에 번호(${formData.phone})로 직접 연락을 드리겠습니다.`);
       setIsModalOpen(false);
       
