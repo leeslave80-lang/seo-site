@@ -63,7 +63,7 @@ export default function RegionalDetailPage({ params }) {
     setIsSubmitting(true);
 
     try {
-      // 📍 눈에 정확히 보이는 상훈님의 무조건 살아있는 진짜 새 슬랙 주소 직격 고정!!
+      // 📍 상훈님의 진짜 새 슬랙 주소 직격 매립
       const SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
       
       const slackMessage = {
@@ -77,15 +77,14 @@ export default function RegionalDetailPage({ params }) {
               `🎓 학생 학년: ${formData.grade}\n` +
               `📍 거주하시는 동: ${formData.dongName}\n` +
               `----------------------------------------\n\n` +
-              `상훈님! 실제 인터넷(Vercel) 실시간 타깃 마케팅 DB 전송 성공! 🚀`
+              `상훈님! 실제 Vercel 서버망 뚫고 진짜 실시간 DB 확보 성공! 🚀`
       };
 
-      // 🛠️ 어제 정석대로 성공시켰던 데이터 유실 차단용 프리패스 통신망 규격 세팅
+      // 🛠️ 데이터 탈락을 만들던 no-cors 옵션을 삭제하고 정석 통신망으로 정면 돌파
       await fetch(SLACK_WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(slackMessage),
-        mode: 'no-cors' // 👈 인터넷 망에서 브라우저 차단벽을 가볍게 통과시키는 핵심 옵션
+        body: JSON.stringify(slackMessage)
       });
 
       alert(`📝 신청이 성공적으로 접수되었습니다!\n${pageData.지역 || currentSlug} 센터 담당 원장님이 24시간 이내에 번호(${formData.phone})로 직접 연락을 드리겠습니다.`);
@@ -109,43 +108,80 @@ export default function RegionalDetailPage({ params }) {
       </div>
       <div style={{ position: 'relative', width: '100%' }}>
         <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600" alt="공부형 교실" style={{ width: '100%', height: 'auto', display: 'block' }} />
+        <div style={{ position: 'absolute', bottom: '15px', left: '15px', backgroundColor: '#1e3a8a', color: '#ffffff', padding: '6px 12px', fontSize: '11px', fontWeight: 'bold', borderRadius: '4px' }}>공부의 주인공이 되는 참여형 교실</div>
       </div>
       <div style={{ padding: '35px 20px' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: '0 0 16px 0' }}>🚫 강사의 일방적인 진도 빼기는 그만!</h3>
-        <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: '1.7', margin: '0' }}><strong>{pageData.지역} 와와학습코칭센터</strong>에서는 1:1로 마주 앉아 끊임없이 피드백을 주고받는 참여형 학습 구조를 실현합니다.</p>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}><div style={{ width: '4px', height: '18px', backgroundColor: '#1e3a8a', marginRight: '8px' }}></div><h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: '0' }}>🚫 강사의 일방적인 진도 빼기는 그만!</h3></div>
+        <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: '1.7', margin: '0 0 16px 0' }}>칠판만 바라보는 대형 학원 수업은 상위 5%만을 위한 들러리 수업이 되기 쉽습니다. 이해하지 못한 채 넘어가는 진도는 결국 모래성을 쌓는 것과 같습니다.</p>
+        <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: '1.7', margin: '0' }}><strong>{pageData.지역} 와와학습코칭센터</strong>에서는 교사가 학생을 일방적으로 가르치는 것이 아니라, 1:1로 마주 앉아 끊임없이 질문하고 피드백을 주고받는 참여형 학습 구조를 실현합니다.</p>
       </div>
-      <div style={{ padding: '30px 20px', backgroundColor: '#ffffff', borderTop: '8px solid #f1f5f9', borderBottom: '8px solid #f1f5f9' }}>
-        <h2 style={{ fontSize: '19px', color: '#0f172a', fontWeight: '800', textAlign: 'center', margin: '0 0 12px 0' }}>투명한 수강료 공시</h2>
-        <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', backgroundColor: '#1e293b', padding: '12px 6px', color: '#ffffff', fontSize: '12.5px', textAlign: 'center' }}><div>구분</div><div>주 2회</div><div>주 3회</div><div>주 5회</div></div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', padding: '14px 6px', borderBottom: '1px solid #f1f5f9', fontSize: '13px', textAlign: 'center' }}><div style={{ fontWeight: 'bold' }}>초등과정</div><div>{feeData.elementary[0]}</div><div>{feeData.elementary[1]}</div><div style={{ color: '#3b82f6', fontWeight: '700' }}>{feeData.elementary[2]}</div></div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', padding: '14px 6px', borderBottom: '1px solid #f1f5f9', fontSize: '13px', textAlign: 'center' }}><div style={{ fontWeight: 'bold' }}>중등과정</div><div>{feeData.middle[0]}</div><div>{feeData.middle[1]}</div><div style={{ color: '#3b82f6', fontWeight: '700' }}>{feeData.middle[2]}</div></div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', padding: '14px 6px', fontSize: '13px', textAlign: 'center' }}><div style={{ fontWeight: 'bold' }}>고등과정</div><div>{feeData.high[0]}</div><div>{feeData.high[1]}</div><div style={{ color: '#d97706', fontWeight: '700' }}>{feeData.high[2]}</div></div>
+      <div style={{ padding: '0 20px 20px 20px' }}>
+        <div style={{ border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px 15px', textAlign: 'center', backgroundColor: '#f8fafc' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginBottom: '12px' }}><span style={{ fontSize: '24px' }}>🏅</span><span style={{ fontSize: '24px' }}>🎯</span></div>
+          <h4 style={{ fontSize: '15px', fontWeight: '700', color: '#1e3a8a', margin: '0 0 6px 0' }}>소비자가 뽑은 올해의 브랜드 대상 수상</h4>
+          <p style={{ fontSize: '12px', color: '#64748b', margin: '0', lineHeight: '1.5' }}>전국 200여 개 지점에서 입증된 코칭 효과성!<br />{pageData.지역} 학부모님이 먼저 알아보고 추천하는 이유입니다.</p>
         </div>
       </div>
-      <div style={{ padding: '30px 20px', backgroundColor: '#f8fafc', textAlign: 'center' }}>
-        <button onClick={handleMapClick} style={{ backgroundColor: '#00c73c', color: '#ffffff', border: 'none', padding: '12px 24px', borderRadius: '6px', fontSize: '13.5px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '20px' }}>네이버 지도에서 정확한 위치 보기</button>
+      <div style={{ padding: '30px 20px', backgroundColor: '#ffffff', borderTop: '8px solid #f1f5f9', borderBottom: '8px solid #f1f5f9' }}>
+        <div style={{ textAlignment: 'center', marginBottom: '20px' }}>
+          <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '1px' }}>FEE DISCLOSURE</span>
+          <h2 style={{ fontSize: '19px', color: '#0f172a', fontWeight: '800', margin: '4px 0 6px 0' }}>투명한 수강료 공시</h2>
+          <p style={{ fontSize: '12px', color: '#64748b', margin: '0', lineHeight: '1.4' }}>교육지원청 등록 기준 공식 금액입니다. <br /><strong style={{ color: '#1e3a8a' }}>{pageData.지역} 센터</strong>는 {feeData.type}을 적용합니다.</p>
+        </div>
+        <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 10px rgba(0,0,0,0.03)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', backgroundColor: '#1e293b', padding: '12px 6px', color: '#ffffff', fontSize: '12.5px', textAlign: 'center' }}><div>구분</div><div>주 2회</div><div>주 3회</div><div>주 5회</div></div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', padding: '14px 6px', borderBottom: '1px solid #f1f5f9', fontSize: '13px', textAlign: 'center' }}><div style={{ fontWeight: 'bold', color: '#475569', backgroundColor: '#f8fafc', padding: '4px 0', borderRadius: '6px' }}>초등과정</div><div>{feeData.elementary[0]}</div><div>{feeData.elementary[1]}</div><div style={{ color: '#3b82f6', fontWeight: '700' }}>{feeData.elementary[2]}</div></div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', padding: '14px 6px', borderBottom: '1px solid #f1f5f9', fontSize: '13px', textAlign: 'center' }}><div style={{ fontWeight: 'bold', color: '#475569', backgroundColor: '#f8fafc', padding: '4px 0', borderRadius: '6px' }}>중등과정</div><div>{feeData.middle[0]}</div><div>{feeData.middle[1]}</div><div style={{ color: '#3b82f6', fontWeight: '700' }}>{feeData.middle[2]}</div></div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', padding: '14px 6px', fontSize: '13px', textAlign: 'center' }}><div style={{ fontWeight: 'bold', color: '#475569', backgroundColor: '#f8fafc', padding: '4px 0', borderRadius: '6px' }}>고등과정</div><div>{feeData.high[0]}</div><div>{feeData.high[1]}</div><div style={{ color: '#d97706', fontWeight: '700' }}>{feeData.high[2]}</div></div>
+        </div>
+      </div>
+      <div style={{ padding: '35px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}><div style={{ width: '4px', height: '18px', backgroundColor: '#1e3a8a', marginRight: '8px' }}></div><h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: '0' }}>🦅 왜 학부모들은 둥지형 시스템에 열광할까요?</h3></div>
+        <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: '1.7', margin: '0 0 20px 0' }}>교사가 중앙에서 모든 학생들의 학습 현황을 실시간으로 밀착 지도할 수 있도록 설계되었습니다.</p>
+        <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?w=600" alt="둥지형 수업" style={{ width: '100%', height: 'auto', borderRadius: '8px', marginBottom: '20px' }} />
+      </div>
+      <div style={{ padding: '15px 20px 35px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}><div style={{ width: '4px', height: '18px', backgroundColor: '#1e3a8a', marginRight: '8px' }}></div><h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: '0' }}>🦅 {pageData.지역} 인근 학교 완벽 내신 대비</h3></div>
+        <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: '1.7', margin: '0' }}>중등부, 고등부 성적 향상의 핵심은 결국 철저한 학교별 내신 분석입니다. <strong>{pageData.지역} 와와</strong>는 인근 학교들의 최근 출제 경향을 데이터화하여 완벽 대비합니다.</p>
+      </div>
+      <div style={{ padding: '30px 20px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0', textAlign: 'center' }}>
+        <div style={{ marginBottom: '24px' }}>
+          <span style={{ fontSize: '20px' }}>📍</span>
+          <h4 style={{ fontSize: '15px', fontWeight: 'bold', color: '#0f172a', margin: '8px 0 12px 0' }}>{pageData.지역} 와와학습코칭학원 오시는 길</h4>
+          <button onClick={handleMapClick} style={{ backgroundColor: '#00c73c', color: '#ffffff', border: 'none', padding: '12px 24px', borderRadius: '6px', fontSize: '13.5px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,199,60,0.2)' }}>네이버 지도에서 정확한 위치 보기</button>
+        </div>
+        <hr style={{ border: '0', height: '1px', backgroundColor: '#e2e8f0', margin: '24px 0' }} />
+        <h3 style={{ fontSize: '17px', fontWeight: '800', color: '#0f172a', margin: '0 0 6px 0' }}>무료 학습 성향 진단 신청하기</h3>
+        <p style={{ fontSize: '12.5px', color: '#475569', margin: '0 0 20px 0' }}>{pageData.지역} 학부모님이 먼저 인정하신 시스템을 경험해 보세요.</p>
         <button onClick={() => setIsModalOpen(true)} style={{ width: '100%', padding: '16px', backgroundColor: '#ea580c', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '15.5px', fontWeight: 'bold', cursor: 'pointer' }}>{pageData.지역} 센터 실시간 상담 예약 ➔</button>
       </div>
 
-      {/* 모달 팝업창 */}
       {isModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '20px' }}>
           <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', width: '100%', maxWidth: '400px', padding: '24px', boxSizing: 'border-box' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '800', margin: '0 0 16px 0' }}>상담 및 학습진단 신청</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: 0 }}>상담 및 학습진단 신청</h3>
+              <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '20px', color: '#94a3b8', cursor: 'pointer' }}>✕</button>
+            </div>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div><label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', marginBottom: '6px' }}>학생 이름 *</label><input type="text" name="studentName" value={formData.studentName} onChange={handleInputChange} placeholder="학생 이름을 입력해 주세요" style={{ width: '100%', padding: '11px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }} required /></div>
-              <div><label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', marginBottom: '6px' }}>학부모님 연락처 *</label><input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="예: 010-1234-5678" style={{ width: '100%', padding: '11px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }} required /></div>
-              <div><label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', marginBottom: '6px' }}>학교명 *</label><input type="text" name="schoolName" value={formData.schoolName} onChange={handleInputChange} placeholder="예: 갈매초등학교" style={{ width: '100%', padding: '11px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }} required /></div>
-              <div><label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', marginBottom: '6px' }}>학년 *</label>
+              <div><label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>학생 이름 *</label><input type="text" name="studentName" value={formData.studentName} onChange={handleInputChange} placeholder="학생 이름을 입력해 주세요" style={{ width: '100%', padding: '11px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }} required /></div>
+              <div><label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>학부모님 연락처 *</label><input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="예: 010-1234-5678" style={{ width: '100%', padding: '11px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }} required /></div>
+              <div><label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>학교명 *</label><input type="text" name="schoolName" value={formData.schoolName} onChange={handleInputChange} placeholder="예: 갈매초등학교" style={{ width: '100%', padding: '11px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }} required /></div>
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>학년 *</label>
                 <select name="grade" value={formData.grade} onChange={handleInputChange} style={{ width: '100%', padding: '11px', border: '1px solid #cbd5e1', borderRadius: '8px', backgroundColor: '#ffffff', boxSizing: 'border-box' }} required>
-                  <option value="">학년을 선택해 주세요</option><option value="초등">초등</option><option value="중등1">중등1</option><option value="중등2">중등2</option><option value="중등3">중등3</option><option value="고등1">고등1</option><option value="고등2">고등2</option><option value="고등3">고등3</option>
+                  <option value="">학년을 선택해 주세요</option>
+                  <option value="초등">초등</option>
+                  <option value="중등1">중등1</option>
+                  <option value="중등2">중등2</option>
+                  <option value="중등3">중등3</option>
+                  <option value="고등1">고등1</option>
+                  <option value="고등2">고등2</option>
+                  <option value="고등3">고등3</option>
                 </select>
               </div>
-              <div><label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', marginBottom: '6px' }}>거주하시는 동 이름 *</label><input type="text" name="dongName" value={formData.dongName} onChange={handleInputChange} placeholder="예: 갈매동" style={{ width: '100%', padding: '11px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }} required /></div>
-              <button type="submit" disabled={isSubmitting} style={{ width: '100%', padding: '14px', backgroundColor: '#1e3a8a', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold', marginTop: '6px' }}>
-                {isSubmitting ? '🚀 슬랙 알림 전송 중...' : `🚀 신청서 제출하기`}
-              </button>
+              <div><label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', color: '#475569', marginBottom: '2px' }}>거주하시는 동 이름 *</label><span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', marginBottom: '6px' }}>(가까운 지점으로 상담드립니다)</span><input type="text" name="dongName" value={formData.dongName} onChange={handleInputChange} placeholder="예: 갈매동" style={{ width: '100%', padding: '11px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }} required /></div>
+              <button type="submit" disabled={isSubmitting} style={{ width: '100%', padding: '14px', backgroundColor: '#1e3a8a', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', marginTop: '6px', boxShadow: '0 4px 6px rgba(30,58,138,0.15)' }}>{isSubmitting ? '🚀 슬랙 알림 전송 중...' : `🚀 신청서 제출하기`}</button>
             </form>
           </div>
         </div>
