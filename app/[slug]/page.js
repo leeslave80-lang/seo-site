@@ -191,7 +191,7 @@ export default function RegionalDetailPage({ params }) {
                 </select>
               </div>
               <div><label style={{ display: 'block', fontSize: '12.5px', fontWeight: 'bold', color: '#475569', marginBottom: '2px' }}>거주하시는 동 이름 *</label><span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', marginBottom: '6px' }}>(가까운 지점으로 상담드립니다)</span><input type="text" name="dongName" value={formData.dongName} onChange={handleInputChange} placeholder="예: 갈매동" style={{ width: '100%', padding: '11px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }} required /></div>
-              <button type="submit" disabled={isSubmitting} style={{ width: '100%', padding: '14px', backgroundColor: '#1e3a8a', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', marginTop: '6px', boxShadow: '0 4px 6px rgba(30,58,138,0.15)' }}>{isSubmitting ? '🚀 텔레그램 전송 중...' : `🚀 신청서 제출하기`}</button>
+              <button type="submit" disabled={isSubmitting} style={{ width: '100%', padding: '14px', backgroundColor: '#1e3a8a', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', marginTop: '6px', boxShadow: '0 4px 6px rgba(30,58,138,0.15)' }}>{isSubmitting ? '🚀 접수내용 전달중...' : `🚀 신청서 제출하기`}</button>
             </form>
           </div>
         </div>
