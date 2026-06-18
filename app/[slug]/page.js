@@ -94,7 +94,7 @@ export default function RegionalDetailPage({ params }) {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' }, 
         body: JSON.stringify(slackMessage),
-        mode: 'no-cors'
+        
       });
 
       // 🎉 접수 완료 팝업 복원
