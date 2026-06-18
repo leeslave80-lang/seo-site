@@ -64,7 +64,7 @@ export default function RegionalDetailPage({ params }) {
 
     try {
       // 📍 상훈님의 진짜 새 슬랙 주소 직격 매립
-      const SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
+      const SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
       
       const slackMessage = {
         text: `🔥 [와와 실시간 상담 신청 알림] 🔥\n\n` +
