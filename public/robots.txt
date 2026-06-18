@@ -1,3 +1,5 @@
 User-agent: *
 Allow: /
-Sitemap: https://seo-site-rho.vercel.app/sitemap.xml
+
+# 🎯 네이버 봇에게 "여기에 우리가 어제 바친 수천 개 페이지 목록(지도)이 있다"라고 알려주는 정석 경로
+Sitemap: https://www.wawacoaching.co.kr/sitemap.xml
