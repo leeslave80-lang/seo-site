@@ -52,8 +52,10 @@ export default function RegionalDetailPage({ params }) {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // 🎯 네이버 지도 클릭 시 '우리 동네' 버그 완벽 해결 진격 코드
   const handleMapClick = () => {
-    const mapUrl = pageData.네이버지도URL || `https://map.naver.com/v5/search/${encodeURIComponent(loc + ' 와와학습코칭센터')}`;
+    const currentRegion = pageData.지역 || decodeURIComponent(rawSlug).trim() || '와와학습코칭센터';
+    const mapUrl = pageData.네이버지도URL || `https://map.naver.com/v5/search/${encodeURIComponent(currentRegion + ' 와와학습코칭센터')}`;
     window.open(mapUrl, '_blank');
   };
 
